@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "mapbox-gl/dist/mapbox-gl.css";
+
+:root {
+  /* Brand palette */
+  --bg:             #d6cbbb;   /* warm beige — primary background */
+  --bg-light:       #e8e3da;   /* lighter tint for cards / hover */
+  --brand:          #546e4c;   /* olive green */
+  --accent-brown:   #7b4227;   /* brown accent (limited) */
+  --accent-orange:  #c54e24;   /* burnt orange accent (limited) */
+
+  /* Text */
+  --dark:   #2a2018;           /* warm near-black */
+  --muted:  rgba(42,32,24,0.48);
+
+  /* Hero / dark sections */
+  --hero-dark: #1a1612;
+
+  /* Font families */
+  --font-serif:  var(--font-serif);
+  --font-sans:   var(--font-sans);
+  --font-script: var(--font-script);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--dark);
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+}
+
+/* ─── RTL / Arabic overrides ──────────────────────────────────────────────── */
+/*
+  When the user switches to Arabic the <html> element gets dir="rtl".
+  The CSS variables below reroute the font families to the Arabic equivalents
+  loaded in layout.tsx, so EVERY component that already uses var(--font-serif)
+  and var(--font-sans) automatically renders in the correct Arabic typeface
+  without any component-level changes.
+
+  Arabic text does not benefit from wide letter-spacing, so we reset it to 0
+  globally inside RTL. Inline styles with letterSpacing are overridden via
+  !important to make this work uniformly.
+*/
+
+[dir="rtl"] {
+  --font-serif:  var(--font-arabic-serif);   /* Noto Serif Arabic  */
+  --font-sans:   var(--font-arabic-sans);    /* Tajawal            */
+  --font-script: var(--font-arabic-serif);   /* no script Arabic — fallback to serif */
+}
+
+/* Reset letter-spacing for all text in RTL; Arabic never uses wide tracking */
+[dir="rtl"] * {
+  letter-spacing: 0 !important;
+}
+
+/* ─── Mapbox popup — rich card override ───────────────────────────────────── */
+/* Scoped to .soul-popup so nothing else in Mapbox is affected.               */
+
+.soul-popup .mapboxgl-popup-content {
+  padding:       0;
+  background:    #f0ece4;
+  border:        1px solid rgba(42, 32, 24, 0.09);
+  border-radius: 3px;
+  overflow:      hidden;
+  box-shadow:    0 6px 28px rgba(42, 32, 24, 0.14);
+  width:         240px;
+}
+
+/* Tip caret — matches popup background for every anchor direction */
+.soul-popup.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color:    #f0ece4; }
+.soul-popup.mapboxgl-popup-anchor-top    .mapboxgl-popup-tip { border-bottom-color: #f0ece4; }
+.soul-popup.mapboxgl-popup-anchor-left   .mapboxgl-popup-tip { border-right-color:  #f0ece4; }
+.soul-popup.mapboxgl-popup-anchor-right  .mapboxgl-popup-tip { border-left-color:   #f0ece4; }
+
+/* ── Card layout ─────────────────────────────────────────────────────────── */
+.sp-card {
+  display:        flex;
+  flex-direction: column;
+}
+
+/* Image — real photo */
+.sp-img {
+  width:      100%;
+  height:     118px;
+  display:    block;
+  object-fit: cover;   /* applies when tag is <img> */
+  flex-shrink: 0;
+}
+
+/* Placeholder shown when image = null */
+.sp-img--placeholder {
+  /* background is set inline with category-colour tint */
+}
+
+/* Content area below the image */
+.sp-body {
+  padding: 11px 14px 13px;
+}
+
+/* Category label */
+.sp-cat {
+  font-size:      0.44rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  margin:         0 0 5px;
+  line-height:    1;
+  font-family:    var(--font-sans, sans-serif);
+}
+
+/* Place name */
+.sp-name {
+  font-size:   0.82rem;
+  color:       #2a2018;
+  margin:      0;
+  line-height: 1.3;
+  font-weight: 400;
+  font-family: var(--font-sans, sans-serif);
+}
+
+/* Description */
+.sp-desc {
+  font-size:   0.64rem;
+  color:       rgba(42, 32, 24, 0.62);
+  margin:      6px 0 0;
+  line-height: 1.6;
+  font-family: var(--font-sans, sans-serif);
+}
+
+/* ── Location section CTA ("Explore Residences") ────────────────────────── */
+.cta-location {
+  color:                     rgba(214,203,187,0.92);
+  text-decoration:           underline;
+  text-decoration-color:     rgba(214,203,187,0.55);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset:     4px;
+  transition:
+    color                     0.25s ease,
+    text-decoration-color     0.25s ease,
+    text-decoration-thickness 0.25s ease,
+    text-underline-offset     0.25s ease;
+}
+
+.cta-location:hover {
+  color:                     rgba(214,203,187,1);
+  text-decoration-color:     rgba(214,203,187,0.82);
+  text-decoration-thickness: 2px;
+  text-underline-offset:     6px;
+}
+
+/* Area · note sub-line */
+.sp-sub {
+  font-size:      0.48rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color:          rgba(42, 32, 24, 0.38);
+  margin:         7px 0 0;
+  line-height:    1;
+  font-family:    var(--font-sans, sans-serif);
+}
