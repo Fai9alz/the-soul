@@ -11,11 +11,20 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies }            from "next/headers";
 
 export async function createSupabaseServer() {
+  const url     = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    throw new Error(
+      "[supabase-server] Missing required environment variables. " +
+      "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment (Vercel project settings or .env.local).",
+    );
+  }
+
   const cookieStore = await cookies();
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {

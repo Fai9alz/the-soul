@@ -3,12 +3,21 @@ import { NextResponse }        from "next/server";
 import type { NextRequest }    from "next/server";
 
 export async function middleware(request: NextRequest) {
+  const url     = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    throw new Error(
+      "[middleware] Missing required environment variables. " +
+      "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment (Vercel project settings or .env.local).",
+    );
+  }
+
   // Start with a passthrough response so cookies can be forwarded correctly.
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {
