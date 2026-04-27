@@ -299,8 +299,10 @@ export default function ApplicationsPanel() {
 
   async function handleStatusChange(appId: string, status: AppStatus): Promise<void> {
     await updateApplicationStatus(appId, status); // throws on error
-    setApps((prev) => prev.map((a) => a.id === appId ? { ...a, status } : a));
-    setViewing((v) => v?.id === appId ? { ...v, status } : v);
+    // Refetch from DB to confirm persistence — do not rely only on local state
+    const fresh = await getApplications();
+    setApps(fresh);
+    setViewing((v) => v ? (fresh.find((a) => a.id === v.id) ?? null) : null);
   }
 
   // ── Filtering ─────────────────────────────────────────────────────────────
