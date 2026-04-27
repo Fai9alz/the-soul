@@ -471,7 +471,7 @@ function QuotationTemplateInner({ unit }: Props) {
                   onChange={(e) => setPaymentTerms(e.target.value)}
                   placeholder={t.paymentDefault}
                   rows={2}
-                  className="editable-input w-full resize-none rounded-sm border bg-white p-2 text-[11px] leading-relaxed font-light"
+                  className="editable-input no-print w-full resize-none rounded-sm border bg-white p-2 text-[11px] leading-relaxed font-light"
                   style={{ borderColor: COL.rule, color: COL.charcoal }}
                 />
                 <p className="hidden print:block whitespace-pre-wrap pt-1 leading-relaxed" style={{ color: COL.charcoal }}>
@@ -543,7 +543,7 @@ function QuotationTemplateInner({ unit }: Props) {
                 onChange={(e) => setAddOns(e.target.value)}
                 placeholder={t.addOnsPlaceholder}
                 rows={2}
-                className="editable-input w-full resize-none rounded-sm border bg-white p-2 text-[11px] leading-relaxed font-light"
+                className="editable-input no-print w-full resize-none rounded-sm border bg-white p-2 text-[11px] leading-relaxed font-light"
                 style={{ borderColor: COL.rule, color: COL.charcoal }}
               />
               <p className="hidden print:block whitespace-pre-wrap pt-1 text-[11px] leading-relaxed" style={{ color: COL.charcoal }}>
@@ -573,7 +573,7 @@ function QuotationTemplateInner({ unit }: Props) {
               value={customNotes}
               onChange={(e) => setCustomNotes(e.target.value)}
               rows={3}
-              className="editable-input w-full resize-none rounded-sm border bg-white p-2 text-[11px] leading-relaxed font-light"
+              className="editable-input no-print w-full resize-none rounded-sm border bg-white p-2 text-[11px] leading-relaxed font-light"
               style={{ borderColor: COL.rule, color: COL.charcoal }}
             />
             <p className="hidden print:block whitespace-pre-wrap pt-1 text-[11px] leading-relaxed" style={{ color: COL.charcoal }}>
@@ -771,7 +771,7 @@ function EditableField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="editable-input w-full rounded-sm border bg-white px-2 py-1 text-[12px]"
+        className="editable-input no-print w-full rounded-sm border bg-white px-2 py-1 text-[12px]"
         style={{ borderColor: COL.rule, color: COL.charcoal }}
       />
       <p className="hidden print:block pt-0.5 text-[12px] truncate" style={{ color: COL.charcoal }}>
