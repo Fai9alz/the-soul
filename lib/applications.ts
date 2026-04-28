@@ -173,10 +173,23 @@ export async function updateApplicationStatus(
   id: string,
   status: AppStatus,
 ): Promise<void> {
-  const { error } = await supabase
-    .from("applications")
-    .update({ status })
-    .eq("id", id);
+  console.log("[updateApplicationStatus] Updating", id, "→", status);
 
-  if (error) throw new Error(error.message);
+  const { data, error } = await supabase
+    .from("applications")
+    .update({ status: status })
+    .eq("id", id)
+    .select("id");
+
+  if (error) {
+    console.error("[updateApplicationStatus] ✗ Error:", error.message, error.details, error.hint);
+    throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    console.error("[updateApplicationStatus] ✗ 0 rows updated — RLS may be blocking the update");
+    throw new Error("Status update failed — no rows were updated. Check Supabase RLS policy for the applications table.");
+  }
+
+  console.log("[updateApplicationStatus] ✓ Updated", data.length, "row(s)");
 }
