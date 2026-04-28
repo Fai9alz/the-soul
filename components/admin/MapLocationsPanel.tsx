@@ -12,7 +12,7 @@ import {
 } from "@/lib/admin-map-locations";
 
 const EMPTY_FORM: Omit<MapLocation, "id"> = {
-  name: "", category: "landmark", lat: 24.774, lng: 46.634,
+  name: "", category: "landmark", latitude: 24.774, longitude: 46.634,
   relatedProject: "Both", description: "", image: "",
 };
 
@@ -316,8 +316,8 @@ export default function MapLocationsPanel() {
                       <td className="px-4 py-3"><CategoryBadge cat={loc.category} /></td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-gray-500 tabular-nums">{fmtCoord(loc.lat)}, {fmtCoord(loc.lng)}</span>
-                          <a href={`https://www.google.com/maps?q=${loc.lat},${loc.lng}`} target="_blank" rel="noopener noreferrer" title="View on Google Maps"
+                          <span className="font-mono text-xs text-gray-500 tabular-nums">{fmtCoord(loc.latitude)}, {fmtCoord(loc.longitude)}</span>
+                          <a href={`https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`} target="_blank" rel="noopener noreferrer" title="View on Google Maps"
                             className="text-gray-300 hover:text-gray-500 transition-colors opacity-0 group-hover:opacity-100"><IconMapLink /></a>
                         </div>
                       </td>
@@ -368,8 +368,8 @@ export default function MapLocationsPanel() {
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Coordinates</p>
                     <div className="flex items-center gap-1.5">
-                      <p className="font-mono text-xs text-gray-600 tabular-nums truncate">{fmtCoord(loc.lat)}, {fmtCoord(loc.lng)}</p>
-                      <a href={`https://www.google.com/maps?q=${loc.lat},${loc.lng}`} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"><IconMapLink /></a>
+                      <p className="font-mono text-xs text-gray-600 tabular-nums truncate">{fmtCoord(loc.latitude)}, {fmtCoord(loc.longitude)}</p>
+                      <a href={`https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"><IconMapLink /></a>
                     </div>
                   </div>
                   <div className="shrink-0">
@@ -427,14 +427,14 @@ export default function MapLocationsPanel() {
               <FormSection label="Coordinates">
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Latitude" hint="(e.g. 24.784167)">
-                    <input type="number" step="0.000001" value={form.lat} onChange={(e) => setField("lat", parseFloat(e.target.value) || 0)} className={`${inputCls} font-mono`} />
+                    <input type="number" step="0.000001" value={form.latitude} onChange={(e) => setField("latitude", parseFloat(e.target.value) || 0)} className={`${inputCls} font-mono`} />
                   </Field>
                   <Field label="Longitude" hint="(e.g. 46.587056)">
-                    <input type="number" step="0.000001" value={form.lng} onChange={(e) => setField("lng", parseFloat(e.target.value) || 0)} className={`${inputCls} font-mono`} />
+                    <input type="number" step="0.000001" value={form.longitude} onChange={(e) => setField("longitude", parseFloat(e.target.value) || 0)} className={`${inputCls} font-mono`} />
                   </Field>
                 </div>
-                {form.lat !== 0 && form.lng !== 0 && (
-                  <a href={`https://www.google.com/maps?q=${form.lat},${form.lng}`} target="_blank" rel="noopener noreferrer"
+                {form.latitude !== 0 && form.longitude !== 0 && (
+                  <a href={`https://www.google.com/maps?q=${form.latitude},${form.longitude}`} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors">
                     <IconMapLink /> Preview on Google Maps
                   </a>

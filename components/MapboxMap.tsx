@@ -187,17 +187,19 @@ export default function MapboxMap() {
   useEffect(() => {
     getMapLocations()
       .then((locs) => {
+        console.log("[MapboxMap] Fetched", locs.length, "locations from Supabase:", locs);
         placesRef.current = locs.map((loc) => ({
           id:          loc.id,
           name:        loc.name,
           category:    loc.category as Category,
-          coordinates: [loc.lng, loc.lat] as [number, number],
+          coordinates: [loc.longitude, loc.latitude] as [number, number],
           image:       loc.image || null,
           description: loc.description,
         }));
         setPlacesReady(true);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("[MapboxMap] Failed to fetch locations, falling back to static data:", err);
         // Fall back to static data if Supabase is unavailable
         placesRef.current = PLACES;
         setPlacesReady(true);

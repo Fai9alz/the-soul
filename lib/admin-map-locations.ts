@@ -29,8 +29,8 @@ export interface MapLocation {
   id:             string;
   name:           string;
   category:       Category;
-  lat:            number;
-  lng:            number;
+  latitude:       number;
+  longitude:      number;
   relatedProject: RelatedProject;
   description:    string;
   image:          string;
@@ -56,8 +56,8 @@ function rowToLocation(row: MapLocationRow): MapLocation {
     name:           row.name,
     description:    row.description ?? "",
     category:       (row.category ?? "landmark") as Category,
-    lat:            row.latitude,
-    lng:            row.longitude,
+    latitude:       row.latitude,
+    longitude:      row.longitude,
     relatedProject: (row.project ?? "Both") as RelatedProject,
     image:          row.image_url ?? "",
   };
@@ -70,8 +70,8 @@ function locationToPayload(loc: Omit<MapLocation, "id">) {
     name:        (loc.name ?? "").trim(),
     description: loc.description ?? "",
     category:    (loc.category ?? "landmark") as Category,
-    latitude:    Number.isFinite(loc.lat) ? loc.lat : 0,
-    longitude:   Number.isFinite(loc.lng) ? loc.lng : 0,
+    latitude:    Number.isFinite(loc.latitude) ? loc.latitude : 0,
+    longitude:   Number.isFinite(loc.longitude) ? loc.longitude : 0,
     project:     (loc.relatedProject ?? "Both") as RelatedProject,
     image_url:   loc.image ?? "",
   };
