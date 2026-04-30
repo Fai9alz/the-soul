@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
+import FalLicenseBadge from "@/components/FalLicenseBadge";
 
 export default function Footer() {
   return (
@@ -30,14 +31,10 @@ export default function Footer() {
           Kingdom of Saudi Arabia
         </address>
 
-        {/* Email */}
-        <a
-          href="mailto:info@soul.com"
-          className="mt-7 inline-block text-[0.78rem] sm:text-[0.82rem] font-light tracking-wide transition-opacity hover:opacity-70"
-          style={{ fontFamily: "var(--font-sans)", color: "var(--dark)" }}
-        >
-          info@soul.com
-        </a>
+        {/* FAL License */}
+        <div className="mt-9">
+          <FalLicenseBadge />
+        </div>
 
         {/* Divider */}
         <div

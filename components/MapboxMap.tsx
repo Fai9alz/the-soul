@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { PLACES, type Category, type Place } from "@/lib/places";
-import { getMapLocations } from "@/lib/admin-map-locations";
+import { supabase } from "@/lib/supabase";
 // CSS loaded globally in app/globals.css
 
 // ─── Map config ───────────────────────────────────────────────────────────────
@@ -185,23 +185,36 @@ export default function MapboxMap() {
 
   // ── Load places from Supabase (fallback to static data) ─────────────────────
   useEffect(() => {
-    getMapLocations()
-      .then((locs) => {
-        console.log("[MapboxMap] Fetched", locs.length, "locations from Supabase:", locs);
-        placesRef.current = locs.map((loc) => ({
-          id:          loc.id,
-          name:        loc.name,
-          category:    loc.category as Category,
-          coordinates: [loc.longitude, loc.latitude] as [number, number],
-          image:       loc.image || null,
-          description: loc.description,
-        }));
-        setPlacesReady(true);
-      })
-      .catch((err) => {
-        console.error("[MapboxMap] Failed to fetch locations, falling back to static data:", err);
-        // Fall back to static data if Supabase is unavailable
-        placesRef.current = PLACES;
+    supabase
+      .from("map_locations")
+      .select("id, name, description, category, latitude, longitude, project, image_url")
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("[MapboxMap] Supabase fetch error:", error.message, error.details);
+          placesRef.current = PLACES;
+          setPlacesReady(true);
+          return;
+        }
+
+        console.log("map locations", data);
+
+        const places: Place[] = [];
+        for (const location of (data ?? [])) {
+          const lat = Number(location.latitude);
+          const lng = Number(location.longitude);
+          if (!isFinite(lat) || !isFinite(lng)) continue;
+
+          places.push({
+            id:          location.id,
+            name:        location.name,
+            category:    location.category as Category,
+            coordinates: [lng, lat] as [number, number],
+            image:       location.image_url || null,
+            description: location.description ?? "",
+          });
+        }
+
+        placesRef.current = places;
         setPlacesReady(true);
       });
   }, []);
@@ -210,8 +223,10 @@ export default function MapboxMap() {
   useEffect(() => {
     if (!placesReady || !containerRef.current || mapRef.current) return;
 
+    console.log("MAPBOX TOKEN:", TOKEN || "(undefined — set NEXT_PUBLIC_MAPBOX_TOKEN in .env.local)");
+
     if (!TOKEN) {
-      console.warn("[MapboxMap] NEXT_PUBLIC_MAPBOX_TOKEN is not set.");
+      console.error("[MapboxMap] NEXT_PUBLIC_MAPBOX_TOKEN is not set. Add it to .env.local and restart the dev server.");
       return;
     }
     if (!mapboxgl.supported()) {
