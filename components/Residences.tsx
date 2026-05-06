@@ -203,7 +203,7 @@ function UnitCard({ unit, onClick }: { unit: PublicUnit; onClick: () => void }) 
             fontFamily: "var(--font-serif)",
             fontSize: "1.05rem",
             fontWeight: 400,
-            color: "var(--dark)",
+            color: "var(--heading)",
             marginBottom: 12,
             lineHeight: 1.2,
           }}
@@ -469,7 +469,7 @@ function DetailDrawer({
                   fontFamily: "var(--font-serif)",
                   fontSize: "clamp(1.6rem, 6vw, 2.1rem)",
                   fontWeight: 400,
-                  color: "var(--dark)",
+                  color: "var(--heading)",
                   marginBottom: 24,
                   lineHeight: 1.12,
                 }}
@@ -741,7 +741,7 @@ export default function Residences() {
               fontFamily: "var(--font-serif)",
               fontSize: "clamp(2rem, 5vw, 3rem)",
               fontWeight: 400,
-              color: "var(--dark)",
+              color: "var(--heading)",
               letterSpacing: "0.02em",
               lineHeight: 1.08,
               marginBottom: 16,

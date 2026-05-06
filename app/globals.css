@@ -2,15 +2,19 @@
 @import "mapbox-gl/dist/mapbox-gl.css";
 
 :root {
-  /* Brand palette */
-  --bg:             #d6cbbb;   /* warm beige — primary background */
+  /* Official brand palette */
+  --bg:             #d6cdbb;   /* beige / light — primary background */
   --bg-light:       #e8e3da;   /* lighter tint for cards / hover */
-  --brand:          #546e4c;   /* olive green */
-  --accent-brown:   #7b4227;   /* brown accent (limited) */
-  --accent-orange:  #c54e24;   /* burnt orange accent (limited) */
+  --brand:          #546e4c;   /* green / palm — subtle secondary accent */
+  --accent-brown:   #7b4227;   /* brown / earth — headings & main accents */
+  --accent-orange:  #c54e24;   /* orange / sand — CTA & highlights only */
+
+  /* Semantic role tokens (map palette → usage) */
+  --heading: var(--accent-brown);
+  --cta:     var(--accent-orange);
 
   /* Text */
-  --dark:   #2a2018;           /* warm near-black */
+  --dark:   #2a2018;           /* warm near-black — body copy */
   --muted:  rgba(42,32,24,0.48);
 
   /* Hero / dark sections */
@@ -20,6 +24,21 @@
   --font-serif:  var(--font-serif);
   --font-sans:   var(--font-sans);
   --font-script: var(--font-script);
+
+  /* ─── New homepage design tokens (Claude Design — The Soul) ───────────── */
+  --beige:        #d6cdbb;
+  --beige-2:      #e8e1d2;
+  --brown:        #7b4227;
+  --brown-deep:   #3a2418;
+  --orange:       #c54e24;
+  --green:        #546e4c;
+  --ink:          #15110d;
+  --ink-2:        #1f1a14;
+  --ink-3:        #2a221a;
+  --paper:        #f4efe6;
+  --paper-2:      #ece5d6;
+  --line:         rgba(214,205,187,.18);
+  --line-strong:  rgba(214,205,187,.32);
 }
 
 @layer base {
@@ -163,4 +182,183 @@
   margin:         7px 0 0;
   line-height:    1;
   font-family:    var(--font-sans, sans-serif);
+}
+
+/* ─── Claude Design — animations & shared utility classes ────────────────── */
+
+@keyframes soul-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes soul-bar-fill {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes soul-ping {
+  0%   { transform: scale(1);   opacity: .4; }
+  100% { transform: scale(2.6); opacity: 0;  }
+}
+
+@keyframes soul-cue-slide {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(100%);  }
+  100% { transform: translateX(100%);  }
+}
+
+@keyframes soul-fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Marquee track + mask */
+.soul-marquee {
+  position:        relative;
+  width:           100%;
+  overflow:        hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image:         linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+
+.soul-marquee .soul-track {
+  display:        flex;
+  gap:            24px;
+  width:          max-content;
+  animation:      soul-marquee 80s linear infinite;
+  will-change:    transform;
+}
+
+.soul-marquee:hover .soul-track {
+  animation-play-state: paused;
+}
+
+/* Hero indicator bars */
+.soul-bar {
+  width:    38px;
+  height:   1px;
+  background: rgba(214,205,187,.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.soul-bar.is-active::after {
+  content:  "";
+  position: absolute;
+  inset:    0;
+  background: var(--beige);
+  animation:  soul-bar-fill 6s linear forwards;
+}
+
+.soul-cue-line {
+  width:    42px;
+  height:   1px;
+  background: var(--beige);
+  position: relative;
+  overflow: hidden;
+}
+
+.soul-cue-line::after {
+  content:  "";
+  position: absolute;
+  left:     0;
+  top:      0;
+  width:    50%;
+  height:   100%;
+  background: var(--orange);
+  animation:  soul-cue-slide 2.4s ease-in-out infinite;
+}
+
+/* Status badge */
+.soul-status {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            10px;
+  padding:        9px 14px;
+  border-radius:  30px;
+  font-family:    var(--font-mono), monospace;
+  font-size:      10.5px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  background:     transparent;
+  border:         1px solid currentColor;
+}
+
+.soul-status .pulse {
+  width:        6px;
+  height:       6px;
+  border-radius: 50%;
+  background:   currentColor;
+  position:     relative;
+}
+
+.soul-status.is-ready {
+  color: #9ec48a;
+  border-color: rgba(158, 196, 138, .4);
+}
+
+.soul-status.is-ready .pulse::after {
+  content:      "";
+  position:     absolute;
+  inset:        -4px;
+  border-radius: 50%;
+  border:       1px solid currentColor;
+  opacity:      .5;
+  animation:    soul-ping 2.4s ease-out infinite;
+}
+
+.soul-status.is-future {
+  color:        rgba(214, 205, 187, .7);
+  border-color: rgba(214, 205, 187, .25);
+}
+
+/* Primary + ghost buttons (mockup) */
+.soul-btn {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            10px;
+  padding:        13px 22px;
+  font-size:      11.5px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  border:         1px solid transparent;
+  border-radius:  2px;
+  background:     var(--orange);
+  color:          #fff;
+  transition:     all .35s ease;
+  cursor:         pointer;
+  font-family:    var(--font-sans), sans-serif;
+  font-weight:    500;
+  text-decoration: none;
+}
+
+.soul-btn:hover { background: #a83f1c; }
+
+.soul-btn .arrow { display: inline-block; transition: transform .35s; }
+.soul-btn:hover .arrow { transform: translateX(4px); }
+
+.soul-btn.is-ghost {
+  background:   transparent;
+  border-color: var(--line-strong);
+  color:        var(--beige);
+}
+
+.soul-btn.is-ghost:hover {
+  border-color: var(--beige);
+  background:   rgba(214, 205, 187, .06);
+}
+
+/* Hide scrollbars on horizontal scroll containers */
+.soul-no-scrollbar::-webkit-scrollbar { display: none; }
+.soul-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Fade-up on scroll */
+.soul-fade {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .9s ease, transform .9s ease;
+}
+.soul-fade.is-in {
+  opacity: 1;
+  transform: translateY(0);
 }

@@ -3,6 +3,8 @@ import {
   Playfair_Display,
   Inter,
   Great_Vibes,
+  Cormorant_Garamond,
+  JetBrains_Mono,
   Tajawal,
   Cairo,
 } from "next/font/google";
@@ -30,6 +32,22 @@ const greatVibes = Great_Vibes({
   subsets:  ["latin"],
   weight:   ["400"],
   variable: "--font-script",
+  display:  "swap",
+});
+
+// Design fonts — luxury serif + technical mono used by the new homepage
+const cormorant = Cormorant_Garamond({
+  subsets:  ["latin"],
+  weight:   ["300", "400", "500", "600"],
+  style:    ["normal", "italic"],
+  variable: "--font-display",
+  display:  "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets:  ["latin"],
+  weight:   ["400", "500"],
+  variable: "--font-mono",
   display:  "swap",
 });
 
@@ -73,6 +91,8 @@ export default function RootLayout({
         playfair.variable,
         inter.variable,
         greatVibes.variable,
+        cormorant.variable,
+        jetbrainsMono.variable,
         tajawal.variable,
         cairo.variable,
       ].join(" ")}

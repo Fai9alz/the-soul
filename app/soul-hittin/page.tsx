@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function SoulHittinPage() {
   return (
-    <main style={{ backgroundColor: "#d6cbbb" }}>
+    <main style={{ backgroundColor: "#d6cdbb" }}>
       <Nav />
       <SoulHittinHeader />
       <SoulHittinUnits />

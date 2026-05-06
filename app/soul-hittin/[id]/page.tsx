@@ -19,7 +19,7 @@ import type { UnitType, UnitStatus } from "@/lib/units";
 type Props = { params: Promise<{ id: string }> };
 
 // ── Palette ────────────────────────────────────────────────────────────────────
-const BG = "#d6cbbb";
+const BG = "#d6cdbb";
 
 // ── Type derivation (mirrors lib/public-units.ts) ─────────────────────────────
 function deriveType(bedrooms: number, floor: number): UnitType {

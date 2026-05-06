@@ -23,7 +23,7 @@ export default function FAQ() {
         className="mb-14 font-normal"
         style={{
           fontFamily: "var(--font-serif)",
-          color:      "var(--dark)",
+          color:      "var(--heading)",
           fontSize:   "clamp(1.7rem,5vw,2.6rem)",
         }}
       >
@@ -78,12 +78,12 @@ export default function FAQ() {
           className="mb-2 font-normal"
           style={{
             fontFamily: "var(--font-serif)",
-            color:      "var(--dark)",
+            color:      "var(--heading)",
             fontSize:   "clamp(1.5rem,4vw,2.2rem)",
           }}
         >
           {t.faq.readyHeading}{" "}
-          <em style={{ fontFamily: "var(--font-script)", fontSize: "1.1em", color: "var(--brand)" }}>
+          <em style={{ fontFamily: "var(--font-script)", fontSize: "1.1em", color: "var(--heading)" }}>
             {t.common.theSoulEm}
           </em>
         </h3>
@@ -103,7 +103,7 @@ export default function FAQ() {
           className="inline-block px-8 py-3.5 text-[0.68rem] uppercase tracking-[0.2em] transition-opacity hover:opacity-75"
           style={{
             fontFamily:      "var(--font-sans)",
-            backgroundColor: "var(--brand)",
+            backgroundColor: "var(--cta)",
             color:           "var(--bg)",
             border:          "none",
             cursor:          "pointer",

@@ -8,8 +8,9 @@ import { useLanguage }  from "@/contexts/LanguageContext";
 import { getStatusLabel, getTypeLabel } from "@/lib/i18n";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
-const BG      = "#d6cbbb";
+const BG      = "#d6cdbb";
 const DARK    = "#2a2018";
+const HEADING = "#7b4227";
 const MUTED60 = "rgba(42,32,24,0.60)";
 const MUTED42 = "rgba(42,32,24,0.42)";
 const MUTED28 = "rgba(42,32,24,0.28)";
@@ -206,7 +207,7 @@ export default function UnitDetailContent({
               fontFamily:    "var(--font-serif)",
               fontSize:      "clamp(1.8rem, 5vw, 2.6rem)",
               letterSpacing: "0.02em",
-              color:         DARK,
+              color:         HEADING,
             }}
           >
             {formatPrice(price)}
@@ -248,7 +249,7 @@ export default function UnitDetailContent({
                 style={{
                   fontFamily:    "var(--font-serif)",
                   fontSize:      "1.6rem",
-                  color:         DARK,
+                  color:         HEADING,
                   letterSpacing: "0.02em",
                 }}
               >

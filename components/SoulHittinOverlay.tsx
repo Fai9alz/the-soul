@@ -140,7 +140,7 @@ function UnitCard({ unit, onClick }: { unit: Unit; onClick: () => void }) {
 
         {/* name */}
         <h3 style={{ fontFamily: "var(--font-serif)", fontSize: "1.05rem", fontWeight: 400,
-          color: "var(--dark)", marginBottom: 12, lineHeight: 1.2 }}>
+          color: "var(--heading)", marginBottom: 12, lineHeight: 1.2 }}>
           {unit.name}
         </h3>
 
@@ -283,7 +283,7 @@ function UnitDrawer({ unit, onClose }: { unit: Unit | null; onClose: () => void 
               {/* name */}
               <h2 style={{ fontFamily: "var(--font-serif)",
                 fontSize: "clamp(1.6rem, 6vw, 2.1rem)", fontWeight: 400,
-                color: "var(--dark)", marginBottom: 24, lineHeight: 1.12 }}>
+                color: "var(--heading)", marginBottom: 24, lineHeight: 1.12 }}>
                 {unit.name}
               </h2>
 
@@ -485,7 +485,7 @@ export default function SoulHittinOverlay({ onClose }: { onClose: () => void }) 
               Hittin · Riyadh
             </p>
             <p style={{ fontFamily: "var(--font-serif)", fontSize: "1.05rem",
-              fontWeight: 400, color: "var(--dark)", letterSpacing: "0.02em",
+              fontWeight: 400, color: "var(--heading)", letterSpacing: "0.02em",
               lineHeight: 1 }}>
               Soul Hittin
             </p>
@@ -518,7 +518,7 @@ export default function SoulHittinOverlay({ onClose }: { onClose: () => void }) 
         }}>
           <h2 style={{ fontFamily: "var(--font-serif)",
             fontSize: "clamp(1.9rem, 5vw, 2.8rem)", fontWeight: 400,
-            color: "var(--dark)", letterSpacing: "0.02em", lineHeight: 1.08, marginBottom: 14 }}>
+            color: "var(--heading)", letterSpacing: "0.02em", lineHeight: 1.08, marginBottom: 14 }}>
             Residences
           </h2>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.68rem",

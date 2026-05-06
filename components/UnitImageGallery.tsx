@@ -254,7 +254,7 @@ export default function UnitImageGallery({ unitRef }: Props) {
               <span style={{
                 fontFamily: "var(--font-sans)", fontSize: "0.48rem",
                 textTransform: "uppercase" as const, letterSpacing: "0.3em",
-                color: "#d6cbbb", opacity: 0.18,
+                color: "#d6cdbb", opacity: 0.18,
               }}>
                 Photo {i + 1}
               </span>

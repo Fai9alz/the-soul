@@ -13,9 +13,10 @@ import { getStatusLabel, getTypeLabel, TranslationDict } from "@/lib/i18n";
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 
-const BG       = "#d6cbbb";
+const BG       = "#d6cdbb";
 const CARD_BG  = "#cec5b4";
 const DARK     = "#2a2018";
+const HEADING  = "#7b4227";
 const MUTED_60 = "rgba(42,32,24,0.60)";
 const MUTED_42 = "rgba(42,32,24,0.42)";
 const MUTED_30 = "rgba(42,32,24,0.30)";
@@ -277,7 +278,7 @@ export default function SoulHittinUnits() {
                     fontFamily: "var(--font-serif)",
                     fontSize: "1.15rem",
                     letterSpacing: "0.02em",
-                    color: DARK,
+                    color: HEADING,
                     fontWeight: 400,
                     lineHeight: 1.25,
                     marginBottom: "16px",

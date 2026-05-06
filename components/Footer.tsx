@@ -1,84 +1,185 @@
-// ─── The Soul — Footer ────────────────────────────────────────────────────────
-// Center-aligned, minimal footer shown at the bottom of all public pages.
-// Styling mirrors the editorial palette already used elsewhere on the site.
-// ─────────────────────────────────────────────────────────────────────────────
+"use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import FalLicenseBadge from "@/components/FalLicenseBadge";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+// Footer — Claude Design "The Soul"
+// Dark 4-column footer: brand + 3 link columns + bottom bar.
 
 export default function Footer() {
+  const { locale, setLocale } = useLanguage();
+  const isAr = locale === "ar";
+
+  const colHeader: React.CSSProperties = {
+    fontFamily: "var(--font-mono)",
+    fontSize: 10.5,
+    letterSpacing: "0.22em",
+    textTransform: "uppercase",
+    color: "rgba(214,205,187,.5)",
+    marginBottom: 22,
+  };
+
+  const linkStyle: React.CSSProperties = {
+    display: "block",
+    fontSize: 14,
+    lineHeight: 2,
+    color: "var(--beige)",
+    opacity: 0.78,
+    textDecoration: "none",
+    fontFamily: "var(--font-sans)",
+    transition: "opacity .3s, color .3s",
+  };
+
   return (
     <footer
-      className="px-6 py-14 sm:px-10 sm:py-16 lg:px-16"
       style={{
-        backgroundColor: "var(--bg)",
-        borderTop:       "1px solid rgba(42,32,24,0.1)",
+        background: "#0c0907",
+        color: "var(--beige)",
+        padding: "80px 0 36px",
       }}
     >
-      <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-
-        {/* Address */}
-        <address
-          className="not-italic text-[0.78rem] sm:text-[0.82rem] font-light leading-loose"
-          style={{ fontFamily: "var(--font-sans)", color: "var(--muted)" }}
-        >
-          Building 2195, Prince Muhammad Ibn Abdulaziz Street
-          <br />
-          North Mather District
-          <br />
-          Riyadh 12314
-          <br />
-          Kingdom of Saudi Arabia
-        </address>
-
-        {/* FAL License */}
-        <div className="mt-9">
-          <FalLicenseBadge />
+      <div
+        className="soul-footer-top"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.4fr 1fr 1fr 1fr",
+          gap: 60,
+          padding: "0 24px 60px",
+          borderBottom: "1px solid var(--line)",
+        }}
+      >
+        <div>
+          <Link href="/" aria-label="The Soul" style={{ display: "inline-block" }}>
+            <Image
+              src="/design/logo-thesoul-uploaded.png"
+              alt="The Soul"
+              width={1400}
+              height={420}
+              quality={100}
+              style={{ height: 42, width: "auto", objectFit: "contain" }}
+            />
+          </Link>
+          <p
+            style={{
+              marginTop: 24,
+              fontSize: 14,
+              lineHeight: 1.7,
+              opacity: 0.6,
+              maxWidth: 340,
+              fontFamily: "var(--font-sans)",
+            }}
+          >
+            {isAr
+              ? "مجتمع سكني طويل الأمد في الرياض. يُدار بهدوء، ويُصمَّم بنية، ويسكنه من يلاحظ التفاصيل."
+              : "A long-term living community in Riyadh. Operated quietly, designed deliberately, occupied by people who notice."}
+          </p>
         </div>
 
-        {/* Divider */}
-        <div
-          className="mt-10 h-px w-16"
-          style={{ backgroundColor: "rgba(42,32,24,0.18)" }}
-        />
-
-        {/* Copyright */}
-        <p
-          className="mt-8 text-[0.7rem] sm:text-[0.72rem] font-light tracking-wide"
-          style={{ fontFamily: "var(--font-sans)", color: "var(--muted)" }}
-        >
-          Copyright © 2025 OHG | All Rights Reserved
-        </p>
-
-        {/* Legal links */}
-        <nav
-          className="mt-3 flex flex-col items-center gap-2 sm:flex-row sm:gap-4"
-          aria-label="Legal"
-        >
-          <Link
-            href="/terms"
-            className="text-[0.7rem] sm:text-[0.72rem] font-light uppercase tracking-[0.18em] transition-opacity hover:opacity-70"
-            style={{ fontFamily: "var(--font-sans)", color: "var(--muted)" }}
-          >
-            Terms and Conditions
+        <div>
+          <h5 style={colHeader}>{isAr ? "المساكن" : "Residences"}</h5>
+          <Link href="/soul-hittin" style={linkStyle}>
+            {isAr ? "سول حطين" : "Soul Hittin"}
           </Link>
-          <span
-            className="hidden sm:inline text-[0.7rem]"
-            style={{ color: "rgba(42,32,24,0.3)" }}
-            aria-hidden="true"
-          >
-            |
-          </span>
-          <Link
-            href="/privacy"
-            className="text-[0.7rem] sm:text-[0.72rem] font-light uppercase tracking-[0.18em] transition-opacity hover:opacity-70"
-            style={{ fontFamily: "var(--font-sans)", color: "var(--muted)" }}
-          >
-            Privacy Policy
+          <Link href="#apply" style={linkStyle}>
+            {isAr ? "سول كافد" : "Soul KAFD"}
           </Link>
-        </nav>
+          <Link href="#apply" style={linkStyle}>
+            {isAr ? "سول الوادي" : "Soul Alwadi"}
+          </Link>
+          <Link href="#residences" style={linkStyle}>
+            {isAr ? "المخططات" : "Floor plans"}
+          </Link>
+        </div>
 
+        <div>
+          <h5 style={colHeader}>{isAr ? "الشركة" : "Company"}</h5>
+          <Link href="#about" style={linkStyle}>{isAr ? "نبذة" : "About"}</Link>
+          <Link href="#about" style={linkStyle}>{isAr ? "التشغيل" : "Operations"}</Link>
+          <Link href="#about" style={linkStyle}>{isAr ? "إعلام" : "Press"}</Link>
+          <Link href="#about" style={linkStyle}>{isAr ? "الوظائف" : "Careers"}</Link>
+          <Link href="#apply" style={linkStyle}>{isAr ? "تواصل" : "Contact"}</Link>
+        </div>
+
+        <div>
+          <h5 style={colHeader}>{isAr ? "تواصل معنا" : "Get in touch"}</h5>
+          <a href="mailto:Reservations_AH@oaktree.sa" style={linkStyle}>Reservations_AH@oaktree.sa</a>
+          <a
+            href="https://www.instagram.com/thesoulksa?igsh=ZXY5YTRteTYxYzQy"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ ...linkStyle, marginTop: 12 }}
+          >
+            Instagram
+          </a>
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={linkStyle}
+          >
+            LinkedIn
+          </a>
+        </div>
       </div>
+
+      <div
+        className="soul-footer-bot"
+        style={{
+          padding: "32px 24px 0",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: 11.5,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          opacity: 0.55,
+          flexWrap: "wrap",
+          gap: 20,
+          fontFamily: "var(--font-mono)",
+        }}
+      >
+        <div>{isAr ? "© ٢٠٢٦ · ذا سول · جميع الحقوق محفوظة" : "© 2026 · The Soul · All rights reserved"}</div>
+        <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
+          <Link href="#about" style={{ color: "inherit", textDecoration: "none" }}>
+            {isAr ? "الخصوصية" : "Privacy"}
+          </Link>
+          <Link href="#about" style={{ color: "inherit", textDecoration: "none" }}>
+            {isAr ? "الشروط" : "Terms"}
+          </Link>
+          <button
+            type="button"
+            onClick={() => setLocale(isAr ? "en" : "ar")}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "inherit",
+              fontFamily: "inherit",
+              fontSize: "inherit",
+              letterSpacing: "inherit",
+              textTransform: "inherit",
+              padding: 0,
+            }}
+          >
+            EN · AR
+          </button>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @media (max-width: 900px) {
+          :global(.soul-footer-top) {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 40px !important;
+          }
+        }
+        @media (max-width: 560px) {
+          :global(.soul-footer-top) {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </footer>
   );
 }

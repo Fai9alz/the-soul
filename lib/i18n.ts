@@ -42,6 +42,27 @@ export const translations = {
       comingSoon:        "Coming Soon",
     },
 
+    // ── Features section (12-feature carousel) ────────────────────────────────
+    features: {
+      sectionLabel: "Experience",
+      heading:      "Every detail",
+      headingEm:    "considered.",
+      items: [
+        { number: "01", title: "Curated Furnishings",  body: "Refined pieces selected for comfort and longevity." },
+        { number: "02", title: "Housekeeping",          body: "Scheduled cleaning, quietly handled." },
+        { number: "03", title: "Maintenance",           body: "Preventative, not reactive." },
+        { number: "04", title: "Smart Access",          body: "Seamless entry and resident control." },
+        { number: "05", title: "Wellness Spaces",       body: "Access to curated fitness areas." },
+        { number: "06", title: "Community Lounges",     body: "Shared areas that feel private." },
+        { number: "07", title: "Concierge",             body: "On-call support, always available." },
+        { number: "08", title: "High-Speed Internet",   body: "Reliable connectivity, room to room." },
+        { number: "09", title: "Climate Control",       body: "Tailored comfort in every room." },
+        { number: "10", title: "Premium Appliances",    body: "Equipped from day one." },
+        { number: "11", title: "Secure Parking",        body: "Resident-only, monitored access." },
+        { number: "12", title: "Quiet Architecture",    body: "Built for stillness and privacy." },
+      ],
+    },
+
     // ── About slider ──────────────────────────────────────────────────────────
     about: {
       sectionLabel: "About",
@@ -278,6 +299,27 @@ export const translations = {
       sectionLabel:      "مواقعنا",
       exploreResidences: "استكشف الوحدات",
       comingSoon:        "قريباً",
+    },
+
+    // ── Features section (12-feature carousel) ────────────────────────────────
+    features: {
+      sectionLabel: "التجربة",
+      heading:      "كل تفصيل",
+      headingEm:    "محسوب.",
+      items: [
+        { number: "01", title: "أثاث منتقى",          body: "قطع راقية مختارة للراحة والديمومة." },
+        { number: "02", title: "خدمة التنظيف",        body: "تنظيف مجدول يُدار بهدوء." },
+        { number: "03", title: "الصيانة",             body: "وقائية لا رد فعلية." },
+        { number: "04", title: "دخول ذكي",            body: "دخول وتحكّم سلس للساكن." },
+        { number: "05", title: "مرافق العافية",       body: "وصول إلى مساحات لياقة مدروسة." },
+        { number: "06", title: "صالات المجتمع",       body: "مساحات مشتركة بإحساس خاص." },
+        { number: "07", title: "خدمة الكونسيرج",     body: "دعم متاح عند الحاجة دائماً." },
+        { number: "08", title: "إنترنت عالي السرعة",  body: "اتصال موثوق في كل غرفة." },
+        { number: "09", title: "التحكم بالمناخ",      body: "راحة مخصّصة في كل مساحة." },
+        { number: "10", title: "أجهزة متميّزة",       body: "مجهّزة من اليوم الأول." },
+        { number: "11", title: "مواقف آمنة",          body: "للسكان فقط، تحت المراقبة." },
+        { number: "12", title: "هندسة هادئة",         body: "مصمّمة للسكون والخصوصية." },
+      ],
     },
 
     // ── About slider ──────────────────────────────────────────────────────────

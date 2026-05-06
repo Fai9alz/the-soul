@@ -1,9 +1,11 @@
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
+import Intro from "@/components/Intro";
+import Features from "@/components/Features";
 import Locations from "@/components/Locations";
-import MapLoader from "@/components/MapLoader";
+import MapSection from "@/components/MapSection";
 import AboutSlider from "@/components/AboutSlider";
-import FAQ from "@/components/FAQ";
+import FinalCta from "@/components/FinalCta";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -11,10 +13,12 @@ export default function Home() {
     <main>
       <Nav />
       <Hero />
+      <Intro />
+      <Features />
       <Locations />
-      <MapLoader />
+      <MapSection />
       <AboutSlider />
-      <FAQ />
+      <FinalCta />
       <Footer />
     </main>
   );
