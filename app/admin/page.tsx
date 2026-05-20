@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase }    from "@/lib/supabase";
 import UnitsPanel         from "@/components/admin/UnitsPanel";
 import MapLocationsPanel  from "@/components/admin/MapLocationsPanel";
@@ -17,11 +18,26 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "applications", label: "Applications"  },
 ];
 
+const VALID_TABS = new Set<Tab>(["units", "map", "applications"]);
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
-  const [tab, setTab] = useState<Tab>("units");
+  const searchParams = useSearchParams();
+  const initialTab =
+    (searchParams.get("tab") as Tab | null) &&
+    VALID_TABS.has(searchParams.get("tab") as Tab)
+      ? (searchParams.get("tab") as Tab)
+      : "units";
+  const [tab, setTab] = useState<Tab>(initialTab);
   const router = useRouter();
+
+  // Keep state in sync if the URL changes (e.g. back/forward navigation)
+  useEffect(() => {
+    const q = searchParams.get("tab") as Tab | null;
+    if (q && VALID_TABS.has(q) && q !== tab) setTab(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -65,6 +81,18 @@ export default function AdminDashboard() {
               {label}
             </button>
           ))}
+          <Link
+            href="/admin/add-ons"
+            className="shrink-0 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300"
+          >
+            Add-ons
+          </Link>
+          <Link
+            href="/admin/add-on-requests"
+            className="shrink-0 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300"
+          >
+            Add-ons Requests
+          </Link>
         </div>
       </div>
 
