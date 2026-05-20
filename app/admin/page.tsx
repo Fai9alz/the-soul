@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase }    from "@/lib/supabase";
@@ -20,9 +20,29 @@ const TABS: { key: Tab; label: string }[] = [
 
 const VALID_TABS = new Set<Tab>(["units", "map", "applications"]);
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
+// ─── Minimal fallback loader ─────────────────────────────────────────────────
 
-export default function AdminDashboard() {
+function AdminDashboardFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center">
+      <div className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+        Loading…
+      </div>
+    </div>
+  );
+}
+
+// ─── Dashboard (wrapped in Suspense to satisfy useSearchParams) ──────────────
+
+export default function AdminDashboardPage() {
+  return (
+    <Suspense fallback={<AdminDashboardFallback />}>
+      <AdminDashboard />
+    </Suspense>
+  );
+}
+
+function AdminDashboard() {
   const searchParams = useSearchParams();
   const initialTab =
     (searchParams.get("tab") as Tab | null) &&
