@@ -8,7 +8,7 @@
 // • Print button uses native window.print() — best results: Chrome → "Save as PDF"
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useMemo, useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
@@ -73,11 +73,17 @@ const T = {
     area:             "Area",
     status:           "Status",
     pricing:          "Pricing & Payment",
-    listPrice:        "List Price (Annual)",
-    discount:         "Discount",
-    finalPrice:       "Final Price (Annual)",
+    rentalPeriod:     "Rental Period",
+    startDate:        "Start Date",
+    endDate:          "End Date",
+    quotationPrice:   "Quotation Price",
     paymentTerms:     "Payment Terms",
-    paymentDefault:   "Annual rent payable upon contract signing. Cheques accepted.",
+    paymentDefault:   "Rent payable upon contract signing. Cheques accepted.",
+    period1m:         "1 Month",
+    period3m:         "3 Months",
+    period6m:         "6 Months",
+    period1y:         "1 Year",
+    periodCustom:     "Custom Period",
     floorPlan:        "Unit Floor Plan",
     inclusions:       "Inclusions & Features",
     homeFeatures:     "Home Features",
@@ -102,7 +108,7 @@ const T = {
     legal:            "Terms and Conditions  ·  Privacy Policy",
     docTitle:         "The Soul — Quotation",
     presentedBy:      "Presented by The Soul",
-    intro:            "We are pleased to present the following residence for your consideration. The terms below outline the proposed annual lease.",
+    intro:            "We are pleased to present the following residence for your consideration. The terms below outline the proposed lease.",
     clientPlaceholder:{ name: "Client name", phone: "+966…", email: "client@email.com" },
     addOnsPlaceholder:"None",
   },
@@ -126,11 +132,17 @@ const T = {
     area:             "المساحة",
     status:           "الحالة",
     pricing:          "السعر والدفع",
-    listPrice:        "السعر الأساسي (سنوي)",
-    discount:         "الخصم",
-    finalPrice:       "السعر النهائي (سنوي)",
+    rentalPeriod:     "مدة الإيجار",
+    startDate:        "تاريخ البداية",
+    endDate:          "تاريخ النهاية",
+    quotationPrice:   "قيمة العرض",
     paymentTerms:     "شروط الدفع",
-    paymentDefault:   "الإيجار السنوي مستحق عند توقيع العقد. تُقبل الشيكات.",
+    paymentDefault:   "الإيجار مستحق عند توقيع العقد. تُقبل الشيكات.",
+    period1m:         "شهر واحد",
+    period3m:         "3 أشهر",
+    period6m:         "6 أشهر",
+    period1y:         "سنة واحدة",
+    periodCustom:     "مدة مخصصة",
     floorPlan:        "مخطط الوحدة",
     inclusions:       "ما يشمله العرض",
     homeFeatures:     "مزايا الوحدة",
@@ -155,7 +167,7 @@ const T = {
     legal:            "الشروط والأحكام  ·  سياسة الخصوصية",
     docTitle:         "The Soul — عرض سعر",
     presentedBy:      "مقدّم من ذا سول",
-    intro:            "يسعدنا تقديم الوحدة التالية لاطلاعكم. تتضمن البنود أدناه تفاصيل العرض السنوي للإيجار.",
+    intro:            "يسعدنا تقديم الوحدة التالية لاطلاعكم. تتضمن البنود أدناه تفاصيل العرض المقترح للإيجار.",
     clientPlaceholder:{ name: "اسم العميل", phone: "+966…", email: "client@email.com" },
     addOnsPlaceholder:"لا توجد",
   },
@@ -167,6 +179,28 @@ const fmtNumber = (n: number) => n.toLocaleString("en-US");
 const todayISO  = () => new Date().toISOString().slice(0, 10);
 const plusDaysISO = (days: number) =>
   new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+
+type RentalPeriod = "1m" | "3m" | "6m" | "1y" | "custom";
+
+const PERIOD_VALUES: ReadonlySet<RentalPeriod> = new Set([
+  "1m", "3m", "6m", "1y", "custom",
+]);
+
+function isValidPeriod(v: string): v is RentalPeriod {
+  return PERIOD_VALUES.has(v as RentalPeriod);
+}
+function isValidDateISO(v: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(v);
+}
+function periodLabelOf(p: RentalPeriod, t: (typeof T)["en"] | (typeof T)["ar"]): string {
+  switch (p) {
+    case "1m":     return t.period1m;
+    case "3m":     return t.period3m;
+    case "6m":     return t.period6m;
+    case "1y":     return t.period1y;
+    case "custom": return t.periodCustom;
+  }
+}
 
 // Deterministic 3-digit suffix derived from a stable unit identifier.
 // Same id always yields the same sequence — no Math.random().
@@ -200,17 +234,18 @@ function QuotationTemplateInner({ unit }: Props) {
   const sp = useSearchParams();
 
   // Read pre-filled values from URL search params (set by admin modal).
-  const sp_client      = sp.get("client")       ?? "";
-  const sp_phone       = sp.get("phone")        ?? "";
-  const sp_email       = sp.get("email")        ?? "";
-  const sp_discPct     = Number(sp.get("discountPct") ?? "");
-  const sp_discAmt     = Number(sp.get("discountAmt") ?? "");
-  const sp_finalPrice  = Number(sp.get("finalPrice")  ?? "");
-  const sp_payment     = sp.get("payment")      ?? "";
-  const sp_notes       = sp.get("notes")        ?? "";
-  const sp_validUntil  = sp.get("validUntil")   ?? "";
-  const sp_lang        = (sp.get("lang") === "ar" ? "ar" : "en") as Lang;
-  const sp_autoprint   = sp.get("autoprint")    === "1";
+  const sp_client         = sp.get("client")         ?? "";
+  const sp_phone          = sp.get("phone")          ?? "";
+  const sp_email          = sp.get("email")          ?? "";
+  const sp_period         = (sp.get("period") ?? "1y") as RentalPeriod;
+  const sp_start          = sp.get("start")          ?? "";
+  const sp_end            = sp.get("end")            ?? "";
+  const sp_quotationPrice = Number(sp.get("quotationPrice") ?? "");
+  const sp_payment        = sp.get("payment")        ?? "";
+  const sp_notes          = sp.get("notes")          ?? "";
+  const sp_validUntil     = sp.get("validUntil")     ?? "";
+  const sp_lang           = (sp.get("lang") === "ar" ? "ar" : "en") as Lang;
+  const sp_autoprint      = sp.get("autoprint")      === "1";
 
   const [lang, setLang] = useState<Lang>(sp_lang);
   const dir   = lang === "ar" ? "rtl" : "ltr";
@@ -224,28 +259,18 @@ function QuotationTemplateInner({ unit }: Props) {
   const [addOns,       setAddOns]       = useState("");
   const [customNotes,  setCustomNotes]  = useState(sp_notes);
 
-  const listPrice    = unit.price;
-
-  // Discount: if explicit final-price override provided, derive discount from it.
-  // Else if discountAmt provided, use it. Else fall back to discountPct.
-  const initialDiscPct = useMemo(() => {
-    if (Number.isFinite(sp_finalPrice) && sp_finalPrice >= 0 && listPrice > 0) {
-      return Math.max(0, Math.min(100, Math.round(((listPrice - sp_finalPrice) / listPrice) * 1000) / 10));
-    }
-    if (Number.isFinite(sp_discAmt) && sp_discAmt > 0 && listPrice > 0) {
-      return Math.max(0, Math.min(100, Math.round((sp_discAmt / listPrice) * 1000) / 10));
-    }
-    if (Number.isFinite(sp_discPct) && sp_discPct >= 0) {
-      return Math.max(0, Math.min(100, sp_discPct));
-    }
-    return 0;
-  }, [sp_finalPrice, sp_discAmt, sp_discPct, listPrice]);
-
-  const [discountPct, setDiscountPct] = useState<number>(initialDiscPct);
+  // Rental period + manual quotation price (admin-entered, independent of unit.price)
+  const rentalPeriod: RentalPeriod = isValidPeriod(sp_period) ? sp_period : "1y";
+  const isCustomPeriod = rentalPeriod === "custom";
+  const startDate = isCustomPeriod && isValidDateISO(sp_start) ? sp_start : "";
+  const endDate   = isCustomPeriod && isValidDateISO(sp_end)   ? sp_end   : "";
+  const quotationPrice = Number.isFinite(sp_quotationPrice) && sp_quotationPrice > 0
+    ? sp_quotationPrice
+    : 0;
+  const periodLabel = periodLabelOf(rentalPeriod, t);
 
   // Date-dependent values are computed client-side only to keep server and
   // first-client renders byte-identical (no hydration mismatch).
-  // Pre-validated URL value is used directly — it's already deterministic.
   const sp_validUntilValid =
     sp_validUntil && /^\d{4}-\d{2}-\d{2}$/.test(sp_validUntil) ? sp_validUntil : "";
 
@@ -259,9 +284,6 @@ function QuotationTemplateInner({ unit }: Props) {
     setQuotationNumber(buildQuotationNumber(unit.ref, unit.id, today));
     if (!sp_validUntilValid) setValidUntilDate(plusDaysISO(14));
   }, [unit.ref, unit.id, sp_validUntilValid]);
-
-  const discountAmt  = Math.round((listPrice * discountPct) / 100);
-  const finalPrice   = Math.max(0, listPrice - discountAmt);
 
   // Auto-print when ?autoprint=1 (used by Download PDF / Print buttons in admin modal).
   useEffect(() => {
@@ -419,34 +441,25 @@ function QuotationTemplateInner({ unit }: Props) {
           {/* ── Pricing ───────────────────────────────────────────────────── */}
           <Section label={t.pricing}>
             <div className="rounded-sm" style={{ backgroundColor: COL.beige, padding: "14px 16px" }}>
-              <PriceRow label={t.listPrice} value={`${fmtNumber(listPrice)} ${t.sar} ${t.perYear}`} />
-              <div className="mt-2 flex items-center justify-between gap-3 text-[12px]">
-                <span style={{ color: COL.muted }}>{t.discount}</span>
-                <span className="inline-flex items-center gap-2">
-                  <input
-                    type="number"
-                    value={discountPct}
-                    min={0}
-                    max={100}
-                    step={0.5}
-                    onChange={(e) => setDiscountPct(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
-                    className="editable-input no-print w-14 rounded-sm border bg-white px-1.5 py-0.5 text-right text-[12px] tabular-nums"
-                    style={{ borderColor: COL.rule, color: COL.charcoal }}
-                  />
-                  <span className="hidden print:inline tabular-nums" style={{ color: COL.charcoal }}>{discountPct}%</span>
-                  <span className="no-print" style={{ color: COL.muted }}>%</span>
-                  <span className="tabular-nums" style={{ color: COL.charcoal, minWidth: 110, textAlign: "end" }}>
-                    {discountAmt > 0 ? `− ${fmtNumber(discountAmt)} ${t.sar}` : `0 ${t.sar}`}
-                  </span>
-                </span>
+              {/* Rental period summary */}
+              <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-[12px]">
+                <DataRow label={t.rentalPeriod} value={periodLabel} accent />
+                {isCustomPeriod && (
+                  <>
+                    <DataRow label={t.startDate} value={startDate || t.notProvided} />
+                    <DataRow label={t.endDate}   value={endDate   || t.notProvided} />
+                  </>
+                )}
               </div>
+
+              {/* Manual quotation price */}
               <div className="mt-3 border-t pt-3" style={{ borderColor: COL.rule }}>
                 <div className="flex items-baseline justify-between">
                   <span
                     className="text-[12px] uppercase tracking-[0.18em]"
                     style={{ color: COL.bronze, fontWeight: 500 }}
                   >
-                    {t.finalPrice}
+                    {t.quotationPrice}
                   </span>
                   <span
                     className="tabular-nums"
@@ -457,11 +470,11 @@ function QuotationTemplateInner({ unit }: Props) {
                       fontWeight: 500,
                     }}
                   >
-                    {fmtNumber(finalPrice)} {t.sar}
-                    <span className="ml-2 text-[12px] font-light" style={{ color: COL.muted }}>{t.perYear}</span>
+                    {fmtNumber(quotationPrice)} {t.sar}
                   </span>
                 </div>
               </div>
+
               <div className="mt-3 text-[11px]" style={{ color: COL.muted }}>
                 <p className="mb-1 uppercase tracking-[0.18em]" style={{ fontSize: "0.65rem", fontWeight: 500 }}>
                   {t.paymentTerms}
@@ -745,15 +758,6 @@ function DataRow({
       >
         {value}
       </span>
-    </div>
-  );
-}
-
-function PriceRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-baseline justify-between text-[12px]">
-      <span style={{ color: COL.muted }}>{label}</span>
-      <span className="tabular-nums" style={{ color: COL.charcoal }}>{value}</span>
     </div>
   );
 }

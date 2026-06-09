@@ -39,23 +39,33 @@ const EMPTY_FORM: Omit<AdminUnit, "id"> = {
 
 // ─── Quotation form state ─────────────────────────────────────────────────────
 
+export type RentalPeriod = "1m" | "3m" | "6m" | "1y" | "custom";
+
+export const RENTAL_PERIOD_OPTIONS: { value: RentalPeriod; label: string }[] = [
+  { value: "1m",     label: "1 Month"        },
+  { value: "3m",     label: "3 Months"       },
+  { value: "6m",     label: "6 Months"       },
+  { value: "1y",     label: "1 Year"         },
+  { value: "custom", label: "Custom Period"  },
+];
+
 interface QuotationFormState {
-  clientName:   string;
-  clientPhone:  string;
-  clientEmail:  string;
-  discountMode: "percent" | "amount";
-  discountPct:  string;     // string to keep input controlled
-  discountAmt:  string;
-  finalPrice:   string;
-  payment:      string;
-  notes:        string;
-  validUntil:   string;     // YYYY-MM-DD
+  clientName:     string;
+  clientPhone:    string;
+  clientEmail:    string;
+  rentalPeriod:   RentalPeriod;
+  startDate:      string;   // YYYY-MM-DD — used only when rentalPeriod === "custom"
+  endDate:        string;   // YYYY-MM-DD — used only when rentalPeriod === "custom"
+  quotationPrice: string;   // manual SAR amount (string for controlled input)
+  payment:        string;
+  notes:          string;
+  validUntil:     string;   // YYYY-MM-DD
 }
 
 const EMPTY_QUOTE: QuotationFormState = {
   clientName: "", clientPhone: "", clientEmail: "",
-  discountMode: "percent", discountPct: "0", discountAmt: "0",
-  finalPrice: "0", payment: "", notes: "", validUntil: "",
+  rentalPeriod: "1y", startDate: "", endDate: "",
+  quotationPrice: "", payment: "", notes: "", validUntil: "",
 };
 
 function addDaysIso(days: number) {
@@ -204,7 +214,6 @@ export default function UnitsPanel() {
     setQuoteUnit(unit);
     setQuoteForm({
       ...EMPTY_QUOTE,
-      finalPrice: String(unit.price),
       validUntil: addDaysIso(14),
     });
   }
@@ -1280,60 +1289,29 @@ function QuotationModal({
   setLang: React.Dispatch<React.SetStateAction<"en" | "ar">>;
   onClose: () => void;
 }) {
-  // Derive numeric values
-  const listPrice = unit.price;
-  const pct = Math.max(0, Math.min(100, Number(form.discountPct) || 0));
-  const amt = Math.max(0, Math.min(listPrice, Number(form.discountAmt) || 0));
-  const overrideFinal = Math.max(0, Number(form.finalPrice) || 0);
+  const listPrice    = unit.price;
+  const isCustom     = form.rentalPeriod === "custom";
+  const quotePriceN  = Math.max(0, Number(form.quotationPrice) || 0);
 
-  // Compute the displayed final based on the active mode
-  const computedFinal =
-    form.discountMode === "percent"
-      ? Math.max(0, Math.round(listPrice - (listPrice * pct) / 100))
-      : Math.max(0, listPrice - amt);
-
-  // Update final whenever discount changes
-  function setDiscountPct(v: string) {
-    const p = Math.max(0, Math.min(100, Number(v) || 0));
-    setForm((f) => ({
-      ...f,
-      discountPct: v,
-      discountMode: "percent",
-      finalPrice: String(Math.max(0, Math.round(listPrice - (listPrice * p) / 100))),
-    }));
-  }
-  function setDiscountAmt(v: string) {
-    const a = Math.max(0, Math.min(listPrice, Number(v) || 0));
-    setForm((f) => ({
-      ...f,
-      discountAmt: v,
-      discountMode: "amount",
-      finalPrice: String(Math.max(0, listPrice - a)),
-    }));
-  }
-  function setFinalPrice(v: string) {
-    const fp = Math.max(0, Number(v) || 0);
-    const diff = Math.max(0, listPrice - fp);
-    setForm((f) => ({
-      ...f,
-      finalPrice: v,
-      discountMode: "amount",
-      discountAmt: String(diff),
-      discountPct: listPrice > 0 ? String(Math.round((diff / listPrice) * 1000) / 10) : "0",
-    }));
-  }
+  // Validation flags for action buttons
+  const missingPrice  = quotePriceN <= 0;
+  const missingCustom = isCustom && (!form.startDate || !form.endDate);
+  const canGenerate   = !missingPrice && !missingCustom;
 
   function buildUrl(extra: Record<string, string> = {}) {
     const sp = new URLSearchParams();
-    if (form.clientName)  sp.set("client",     form.clientName);
-    if (form.clientPhone) sp.set("phone",      form.clientPhone);
-    if (form.clientEmail) sp.set("email",      form.clientEmail);
-    if (form.discountMode === "percent" && pct > 0) sp.set("discountPct", String(pct));
-    if (form.discountMode === "amount"  && amt > 0) sp.set("discountAmt", String(amt));
-    if (overrideFinal > 0 && overrideFinal !== listPrice) sp.set("finalPrice", String(overrideFinal));
-    if (form.payment)     sp.set("payment",    form.payment);
-    if (form.notes)       sp.set("notes",      form.notes);
-    if (form.validUntil)  sp.set("validUntil", form.validUntil);
+    if (form.clientName)  sp.set("client",         form.clientName);
+    if (form.clientPhone) sp.set("phone",          form.clientPhone);
+    if (form.clientEmail) sp.set("email",          form.clientEmail);
+    sp.set("period", form.rentalPeriod);
+    if (isCustom) {
+      if (form.startDate) sp.set("start", form.startDate);
+      if (form.endDate)   sp.set("end",   form.endDate);
+    }
+    if (quotePriceN > 0)  sp.set("quotationPrice", String(quotePriceN));
+    if (form.payment)     sp.set("payment",        form.payment);
+    if (form.notes)       sp.set("notes",          form.notes);
+    if (form.validUntil)  sp.set("validUntil",     form.validUntil);
     sp.set("lang", lang);
     Object.entries(extra).forEach(([k, v]) => sp.set(k, v));
     const qs = sp.toString();
@@ -1341,9 +1319,11 @@ function QuotationModal({
   }
 
   function handlePreview() {
+    if (!canGenerate) return;
     window.open(buildUrl(), "_blank", "noopener");
   }
   function handleDownload() {
+    if (!canGenerate) return;
     // Open the quotation in a new tab with autoprint=1 — browser print dialog
     // lets the user choose "Save as PDF" or send to a printer.
     window.open(buildUrl({ autoprint: "1" }), "_blank", "noopener");
@@ -1444,47 +1424,83 @@ function QuotationModal({
             </div>
           </div>
 
-          {/* Pricing */}
+          {/* Rental Period */}
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-gray-500 font-medium mb-2">Pricing</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Field label="Discount %">
-                <input
-                  className={inputCls}
-                  type="number"
-                  min={0}
-                  max={100}
-                  step={0.5}
-                  value={form.discountPct}
-                  onChange={(e) => setDiscountPct(e.target.value)}
-                />
-              </Field>
-              <Field label="Discount Amount (SAR)">
-                <input
-                  className={inputCls}
-                  type="number"
-                  min={0}
-                  step={100}
-                  value={form.discountAmt}
-                  onChange={(e) => setDiscountAmt(e.target.value)}
-                />
-              </Field>
-              <Field label="Final Price (SAR / yr)">
-                <input
-                  className={inputCls}
-                  type="number"
-                  min={0}
-                  step={100}
-                  value={form.finalPrice}
-                  onChange={(e) => setFinalPrice(e.target.value)}
-                />
-              </Field>
+            <p className="text-[11px] uppercase tracking-wider text-gray-500 font-medium mb-2">Rental Period</p>
+            <div className="flex flex-wrap gap-2">
+              {RENTAL_PERIOD_OPTIONS.map((opt) => {
+                const active = form.rentalPeriod === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() =>
+                      setForm((f) => ({
+                        ...f,
+                        rentalPeriod: opt.value,
+                        // Clear custom dates when switching away from custom
+                        ...(opt.value !== "custom" ? { startDate: "", endDate: "" } : null),
+                      }))
+                    }
+                    className={`px-3 py-1.5 text-[12px] rounded-md border transition-colors ${
+                      active
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
-            <p className="mt-2 text-[11px] text-gray-400 tabular-nums">
-              Computed final: <span className="text-gray-600 font-medium">{fmtSar(computedFinal)}</span>
-              {overrideFinal !== computedFinal && overrideFinal > 0 && (
-                <span className="ml-2 text-amber-600">· override: {fmtSar(overrideFinal)}</span>
-              )}
+
+            {isCustom && (
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field label="Start Date">
+                  <input
+                    className={inputCls}
+                    type="date"
+                    value={form.startDate}
+                    onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+                  />
+                </Field>
+                <Field label="End Date">
+                  <input
+                    className={inputCls}
+                    type="date"
+                    value={form.endDate}
+                    min={form.startDate || undefined}
+                    onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+                  />
+                </Field>
+              </div>
+            )}
+          </div>
+
+          {/* Quotation Price (manual) */}
+          <div>
+            <p className="text-[11px] uppercase tracking-wider text-gray-500 font-medium mb-2">Quotation Price</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Quotation Price (SAR)">
+                <input
+                  className={inputCls}
+                  type="number"
+                  min={0}
+                  step={100}
+                  inputMode="numeric"
+                  value={form.quotationPrice}
+                  onChange={(e) => setForm((f) => ({ ...f, quotationPrice: e.target.value }))}
+                  placeholder="e.g. 45000"
+                />
+              </Field>
+              <div className="hidden sm:flex items-end">
+                <p className="text-[11px] text-gray-400 tabular-nums">
+                  Reference list price: <span className="text-gray-600 font-medium">{fmtSar(listPrice)}/yr</span>
+                </p>
+              </div>
+            </div>
+            <p className="mt-2 text-[11px] text-gray-500">
+              The quotation price is entered manually and is independent of the annual list price.
             </p>
           </div>
 
@@ -1523,25 +1539,34 @@ function QuotationModal({
 
         {/* Footer actions */}
         <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-2 flex-wrap bg-gray-50">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium rounded-lg hover:bg-gray-100"
-          >
-            Cancel
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium rounded-lg hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            {!canGenerate && (
+              <p className="text-[11px] text-amber-600">
+                {missingPrice ? "Enter a quotation price" : "Pick a start and end date"}
+              </p>
+            )}
+          </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
               onClick={handlePreview}
-              className="px-4 py-2 text-sm font-medium text-gray-800 bg-white border border-gray-300 rounded-lg hover:bg-gray-100"
+              disabled={!canGenerate}
+              className="px-4 py-2 text-sm font-medium text-gray-800 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none"
             >
               Preview Quotation
             </button>
             <button
               type="button"
               onClick={handleDownload}
-              className="px-4 py-2 text-sm font-medium text-white rounded-lg hover:opacity-90"
+              disabled={!canGenerate}
+              className="px-4 py-2 text-sm font-medium text-white rounded-lg hover:opacity-90 disabled:opacity-40 disabled:pointer-events-none"
               style={{ backgroundColor: "#9c7a4a" }}
             >
               Download PDF
@@ -1549,7 +1574,8 @@ function QuotationModal({
             <button
               type="button"
               onClick={handlePrint}
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700"
+              disabled={!canGenerate}
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700 disabled:opacity-40 disabled:pointer-events-none"
             >
               Print
             </button>
