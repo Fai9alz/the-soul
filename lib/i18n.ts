@@ -204,6 +204,7 @@ export const translations = {
       },
       select: {
         optional:     "Select (optional)",
+        choose:       "Select",
         rangeOptional:"Select range (optional)",
         single:       "Single",
         married:      "Married",
@@ -240,6 +241,8 @@ export const translations = {
         phone:        "Phone number is required",
         phoneInvalid: "Numbers only (e.g. +966 50 000 0000)",
         nationality:  "Nationality is required",
+        maritalStatus:"Please select your marital status",
+        members:      "Please select the number of household members",
         occupation:   "Occupation is required",
         viewingDate:  "Please select a preferred date",
         viewingTime:  "Please select a time slot",
@@ -463,6 +466,7 @@ export const translations = {
       },
       select: {
         optional:      "اختر (اختياري)",
+        choose:        "اختر",
         rangeOptional: "اختر النطاق (اختياري)",
         single:        "أعزب / عزباء",
         married:       "متزوج / متزوجة",
@@ -499,6 +503,8 @@ export const translations = {
         phone:        "رقم الجوال مطلوب",
         phoneInvalid: "أرقام فقط (مثال: 966 50 000 0000+)",
         nationality:  "الجنسية مطلوبة",
+        maritalStatus:"يرجى اختيار الحالة الاجتماعية",
+        members:      "يرجى اختيار عدد أفراد الأسرة",
         occupation:   "المهنة مطلوبة",
         viewingDate:  "يرجى اختيار تاريخ مناسب",
         viewingTime:  "يرجى اختيار وقت مناسب",

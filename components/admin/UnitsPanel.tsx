@@ -58,14 +58,30 @@ interface QuotationFormState {
   endDate:        string;   // YYYY-MM-DD — used only when rentalPeriod === "custom"
   quotationPrice: string;   // manual SAR amount (string for controlled input)
   payment:        string;
-  notes:          string;
+  terms:          string;   // editable Notes & Terms (newline-separated bullets)
+  notes:          string;   // Additional Notes — kept separate from terms
   validUntil:     string;   // YYYY-MM-DD
 }
+
+// Default Notes & Terms text — must stay byte-identical to T.en.note1/2/3 and
+// T.ar.note1/2/3 in QuotationTemplate so the modal can detect "still default"
+// and swap the language without clobbering admin edits.
+export const DEFAULT_TERMS_EN = [
+  "Security deposit: SAR 10,000 (refundable).",
+  "This quotation is valid for the period stated above and subject to availability at the time of contract.",
+  "Pricing and unit availability are subject to change without prior notice.",
+].join("\n");
+
+export const DEFAULT_TERMS_AR = [
+  "تأمين قابل للاسترداد: 10,000 ر.س.",
+  "هذا العرض صالح حتى التاريخ المذكور أعلاه ومرهون بتوفر الوحدة عند التعاقد.",
+  "الأسعار وتوفر الوحدات قابلة للتغيير دون إشعار مسبق.",
+].join("\n");
 
 const EMPTY_QUOTE: QuotationFormState = {
   clientName: "", clientPhone: "", clientEmail: "",
   rentalPeriod: "1y", startDate: "", endDate: "",
-  quotationPrice: "", payment: "", notes: "", validUntil: "",
+  quotationPrice: "", payment: "", terms: DEFAULT_TERMS_EN, notes: "", validUntil: "",
 };
 
 function addDaysIso(days: number) {
@@ -214,6 +230,7 @@ export default function UnitsPanel() {
     setQuoteUnit(unit);
     setQuoteForm({
       ...EMPTY_QUOTE,
+      terms:      quoteLang === "ar" ? DEFAULT_TERMS_AR : DEFAULT_TERMS_EN,
       validUntil: addDaysIso(14),
     });
   }
@@ -1310,6 +1327,7 @@ function QuotationModal({
     }
     if (quotePriceN > 0)  sp.set("quotationPrice", String(quotePriceN));
     if (form.payment)     sp.set("payment",        form.payment);
+    if (form.terms)       sp.set("terms",          form.terms);
     if (form.notes)       sp.set("notes",          form.notes);
     if (form.validUntil)  sp.set("validUntil",     form.validUntil);
     sp.set("lang", lang);
@@ -1357,7 +1375,18 @@ function QuotationModal({
                 <button
                   key={L}
                   type="button"
-                  onClick={() => setLang(L)}
+                  onClick={() => {
+                    if (L === lang) return;
+                    // Swap default Notes & Terms when the admin hasn't edited them.
+                    setForm((f) => {
+                      const isDefault =
+                        f.terms === DEFAULT_TERMS_EN || f.terms === DEFAULT_TERMS_AR;
+                      return isDefault
+                        ? { ...f, terms: L === "ar" ? DEFAULT_TERMS_AR : DEFAULT_TERMS_EN }
+                        : f;
+                    });
+                    setLang(L);
+                  }}
                   className={`px-2.5 py-1 text-[11px] uppercase tracking-widest transition-colors ${
                     lang === L ? "bg-gray-900 text-white" : "bg-white text-gray-500 hover:text-gray-800"
                   }`}
@@ -1525,8 +1554,38 @@ function QuotationModal({
             </Field>
           </div>
 
-          {/* Custom Notes */}
-          <Field label="Custom Notes (optional)">
+          {/* Notes & Terms (editable, pre-filled with language-aware defaults) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 font-medium">Notes &amp; Terms</p>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((f) => ({
+                    ...f,
+                    terms: lang === "ar" ? DEFAULT_TERMS_AR : DEFAULT_TERMS_EN,
+                  }))
+                }
+                className="text-[11px] text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
+              >
+                Reset to default
+              </button>
+            </div>
+            <textarea
+              className={`${inputCls} resize-y font-light`}
+              rows={6}
+              value={form.terms}
+              dir={lang === "ar" ? "rtl" : "ltr"}
+              onChange={(e) => setForm((f) => ({ ...f, terms: e.target.value }))}
+              placeholder="One term per line — appears in the Notes & Terms section of the quotation."
+            />
+            <p className="mt-1 text-[11px] text-gray-400">
+              Each line becomes a numbered item in the quotation. Add, edit, or remove freely.
+            </p>
+          </div>
+
+          {/* Additional Notes (separate from Notes & Terms) */}
+          <Field label="Additional Notes (optional)">
             <textarea
               className={`${inputCls} resize-y`}
               rows={4}

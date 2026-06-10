@@ -63,7 +63,7 @@ interface AppRow {
   full_name:      string | null;
   email:          string | null;
   phone:          string | null;
-  members:        string | null;
+  members:        number | null;
   marital_status: string | null;
   job:            string | null;
   company:        string | null;
@@ -83,7 +83,7 @@ function rowToApp(row: AppRow): Application {
     email:         row.email          ?? "",
     phone:         row.phone          ?? "",
     maritalStatus: row.marital_status ?? "",
-    members:       row.members        ?? "",
+    members:       row.members == null ? "" : String(row.members),
     job:           row.job            ?? "",
     company:       row.company        ?? "",
     viewingDate:   row.viewing_date   ?? "",
@@ -105,19 +105,34 @@ function rowToApp(row: AppRow): Application {
 export async function saveApplication(
   payload: Omit<Application, "id" | "submittedAt" | "status">,
 ): Promise<Application> {
+  // ── Normalize ──────────────────────────────────────────────────────────────
+  // - Trim string inputs.
+  // - Send NULL (not "") for optional empty fields so Postgres doesn't try to
+  //   coerce an empty string into a non-text column type.
+  // - Parse `members` as integer; the DB column is integer.
+  const txt = (v: string | undefined | null): string | null => {
+    const s = (v ?? "").trim();
+    return s === "" ? null : s;
+  };
+  const membersStr = (payload.members ?? "").trim();
+  const membersInt = membersStr === "" ? null : Number.parseInt(membersStr, 10);
+  if (membersStr !== "" && (membersInt === null || Number.isNaN(membersInt))) {
+    throw new Error("Household members must be a valid number.");
+  }
+
   const row = {
-    full_name:      payload.name,
-    email:          payload.email,
-    phone:          payload.phone,
-    members:        payload.members,
-    marital_status: payload.maritalStatus,
-    job:            payload.job,
-    company:        payload.company,
-    referral:       payload.referral,
-    referrer_name:  payload.referrerName ?? "",
-    relationship:   payload.relationship ?? "",
-    viewing_date:   payload.viewingDate,
-    viewing_time:   payload.viewingTime,
+    full_name:      txt(payload.name),
+    email:          txt(payload.email),
+    phone:          txt(payload.phone),
+    members:        membersInt,
+    marital_status: txt(payload.maritalStatus),
+    job:            txt(payload.job),
+    company:        txt(payload.company),
+    referral:       txt(payload.referral),
+    referrer_name:  txt(payload.referrerName),
+    relationship:   txt(payload.relationship),
+    viewing_date:   txt(payload.viewingDate),
+    viewing_time:   txt(payload.viewingTime),
     // status defaults to 'New' at the DB level
   };
 

@@ -179,6 +179,8 @@ export default function ApplicationForm({
       else if (!/^\+?[\d\s\-().]{7,}$/.test(d.phone))
                                e.phone    = f.errors.phoneInvalid;
       if (!d.nationality.trim()) e.nationality = f.errors.nationality;
+      if (!d.maritalStatus)      e.maritalStatus = f.errors.maritalStatus;
+      if (!d.members)            e.members       = f.errors.members;
     }
     if (stepIdx === 1) {
       if (!d.occupation.trim()) e.occupation = f.errors.occupation;
@@ -418,14 +420,14 @@ export default function ApplicationForm({
               />
             </Field>
 
-            <Field label={f.labels.maritalStatus}>
+            <Field label={f.labels.maritalStatus} required error={errors.maritalStatus}>
               <div style={{ position: "relative" }}>
                 <select
                   value={data.maritalStatus}
                   onChange={upd("maritalStatus")}
-                  style={{ ...inputBase, cursor: "pointer", paddingRight: "24px", appearance: "none" }}
+                  style={{ ...(errors.maritalStatus ? inputError : inputBase), cursor: "pointer", paddingRight: "24px", appearance: "none" }}
                 >
-                  <option value="">{f.select.optional}</option>
+                  <option value="">{f.select.choose}</option>
                   <option value="Single">{f.select.single}</option>
                   <option value="Married">{f.select.married}</option>
                 </select>
@@ -433,20 +435,20 @@ export default function ApplicationForm({
               </div>
             </Field>
 
-            <Field label={f.labels.members}>
+            <Field label={f.labels.members} required error={errors.members}>
               <div style={{ position: "relative" }}>
                 <select
                   value={data.members}
                   onChange={upd("members")}
-                  style={{ ...inputBase, cursor: "pointer", paddingRight: "24px", appearance: "none" }}
+                  style={{ ...(errors.members ? inputError : inputBase), cursor: "pointer", paddingRight: "24px", appearance: "none" }}
                 >
-                  <option value="">{f.select.optional}</option>
+                  <option value="">{f.select.choose}</option>
                   <option value="1">{f.select.member1}</option>
                   <option value="2">{f.select.member2}</option>
                   <option value="3">{f.select.member3}</option>
                   <option value="4">{f.select.member4}</option>
                   <option value="5">{f.select.member5}</option>
-                  <option value="6+">{f.select.member6plus}</option>
+                  <option value="6">{f.select.member6plus}</option>
                 </select>
                 <span style={{ position: "absolute", right: "6px", top: "50%", transform: "translateY(-50%)", color: "rgba(42,32,24,0.3)", fontSize: "0.55rem", pointerEvents: "none" }}>▾</span>
               </div>

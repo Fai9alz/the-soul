@@ -242,6 +242,7 @@ function QuotationTemplateInner({ unit }: Props) {
   const sp_end            = sp.get("end")            ?? "";
   const sp_quotationPrice = Number(sp.get("quotationPrice") ?? "");
   const sp_payment        = sp.get("payment")        ?? "";
+  const sp_terms          = sp.get("terms")          ?? "";
   const sp_notes          = sp.get("notes")          ?? "";
   const sp_validUntil     = sp.get("validUntil")     ?? "";
   const sp_lang           = (sp.get("lang") === "ar" ? "ar" : "en") as Lang;
@@ -258,6 +259,13 @@ function QuotationTemplateInner({ unit }: Props) {
   const [paymentTerms, setPaymentTerms] = useState(sp_payment);
   const [addOns,       setAddOns]       = useState("");
   const [customNotes,  setCustomNotes]  = useState(sp_notes);
+
+  // Notes & Terms — split admin-entered text by newline. When the param is
+  // absent, fall back to the language-specific default trio so existing links
+  // (and the EN/AR toggle in the toolbar) keep working.
+  const termsItems: string[] = sp_terms
+    ? sp_terms.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+    : [t.note1, t.note2, t.note3];
 
   // Rental period + manual quotation price (admin-entered, independent of unit.price)
   const rentalPeriod: RentalPeriod = isValidPeriod(sp_period) ? sp_period : "1y";
@@ -566,16 +574,18 @@ function QuotationTemplateInner({ unit }: Props) {
           </Section>
 
           {/* ── Notes & Terms ─────────────────────────────────────────────── */}
-          <Section label={t.notes}>
-            <ol
-              className="list-decimal text-[11px] leading-loose font-light"
-              style={{ color: COL.muted, paddingInlineStart: "1.1rem" }}
-            >
-              <li>{t.note1}</li>
-              <li>{t.note2}</li>
-              <li>{t.note3}</li>
-            </ol>
-          </Section>
+          {termsItems.length > 0 && (
+            <Section label={t.notes}>
+              <ol
+                className="list-decimal text-[11px] leading-loose font-light"
+                style={{ color: COL.muted, paddingInlineStart: "1.1rem" }}
+              >
+                {termsItems.map((item, i) => (
+                  <li key={i} style={{ whiteSpace: "pre-wrap" }}>{item}</li>
+                ))}
+              </ol>
+            </Section>
+          )}
 
           {/* ── Custom Notes (optional) ───────────────────────────────────── */}
           <section className={`mt-7 ${customNotes.trim().length === 0 ? "print:hidden" : ""}`}>
