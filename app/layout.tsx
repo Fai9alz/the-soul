@@ -9,6 +9,7 @@ import {
   Cairo,
 } from "next/font/google";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // ── Latin / script fonts ──────────────────────────────────────────────────────
@@ -101,6 +102,7 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );
