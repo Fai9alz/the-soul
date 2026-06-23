@@ -9,6 +9,7 @@ import {
   Cairo,
 } from "next/font/google";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ApplyProvider } from "@/contexts/ApplyContext";
 import "./globals.css";
 
 // ── Latin / script fonts ──────────────────────────────────────────────────────
@@ -99,7 +100,9 @@ export default function RootLayout({
     >
       <body>
         <LanguageProvider>
-          {children}
+          <ApplyProvider>
+            {children}
+          </ApplyProvider>
         </LanguageProvider>
       </body>
     </html>

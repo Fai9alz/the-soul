@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { SOUL_HITTIN_UNITS } from "@/lib/units";           // description/features lookup only
 import { getSoulHittinUnits, PublicUnit, UnitStatus, UnitType } from "@/lib/public-units";
+import { useApply } from "@/contexts/ApplyContext";
 
 // ── config ────────────────────────────────────────────────────────────────────
 
@@ -302,6 +303,7 @@ function DetailDrawer({
   onClose: () => void;
 }) {
   const isOpen = unit !== null;
+  const { openApply } = useApply();
 
   // Static lookup for editorial content (description, features) not in DB.
   // Falls back gracefully for units added via admin that have no static entry.
@@ -604,11 +606,11 @@ function DetailDrawer({
                 </div>
               )}
 
-              {/* CTA */}
+              {/* CTA — open the application form with this unit prefilled */}
               {unit.status === "Available" && (
-                <a
-                  href="#apply"
-                  onClick={onClose}
+                <button
+                  type="button"
+                  onClick={() => { onClose(); openApply({ id: unit.id, ref: unit.ref }); }}
                   style={{
                     display: "block",
                     width: "100%",
@@ -623,18 +625,20 @@ function DetailDrawer({
                     textDecoration: "none",
                     transition: "opacity 0.18s",
                     boxSizing: "border-box" as const,
+                    border: "none",
+                    cursor: "pointer",
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.75"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.75"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
                 >
                   Apply for This Residence
-                </a>
+                </button>
               )}
 
               {unit.status === "Coming Soon" && (
-                <a
-                  href="#apply"
-                  onClick={onClose}
+                <button
+                  type="button"
+                  onClick={() => { onClose(); openApply({ id: unit.id, ref: unit.ref }); }}
                   style={{
                     display: "block",
                     width: "100%",
@@ -650,12 +654,13 @@ function DetailDrawer({
                     border: "1px solid rgba(42,32,24,0.22)",
                     transition: "border-color 0.18s",
                     boxSizing: "border-box" as const,
+                    cursor: "pointer",
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(42,32,24,0.5)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(42,32,24,0.22)"; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(42,32,24,0.5)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(42,32,24,0.22)"; }}
                 >
                   Register Interest
-                </a>
+                </button>
               )}
 
               {unit.status === "Reserved" && (

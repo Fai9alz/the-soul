@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useApply } from "@/contexts/ApplyContext";
 
 // Final CTA — Claude Design "The Soul"
 // Full-bleed dark section with interior backdrop and apply CTAs.
@@ -9,6 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function FinalCta() {
   const { locale } = useLanguage();
+  const { openApply } = useApply();
   const isAr = locale === "ar";
 
   return (
@@ -106,11 +108,16 @@ export default function FinalCta() {
             flexWrap: "wrap",
           }}
         >
-          {/* Existing application route preserved — uses /soul-hittin (only available residence) */}
-          <Link href="/soul-hittin#apply" className="soul-btn">
+          {/* General application — opens the form with no unit selected */}
+          <button
+            type="button"
+            onClick={() => openApply()}
+            className="soul-btn"
+            style={{ cursor: "pointer", background: "none", border: "none" }}
+          >
             {isAr ? "ابدأ طلبك" : "Start your application"}{" "}
             <span className="arrow">→</span>
-          </Link>
+          </button>
           <Link href="#about" className="soul-btn is-ghost">
             {isAr ? "احجز جولة خاصة" : "Book a private viewing"}
           </Link>

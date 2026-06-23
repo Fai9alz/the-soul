@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useApply } from "@/contexts/ApplyContext";
 
 const SLIDES = [
   "/design/interior-1.jpeg",
@@ -21,6 +22,7 @@ const ROTATION_MS = 6000;
  */
 export default function Hero() {
   const { locale } = useLanguage();
+  const { openApply } = useApply();
   const isAr = locale === "ar";
   const [active, setActive] = useState(0);
 
@@ -196,10 +198,15 @@ export default function Hero() {
               flexWrap: "wrap",
             }}
           >
-            <Link href="#apply" className="soul-btn">
+            <button
+              type="button"
+              onClick={() => openApply()}
+              className="soul-btn"
+              style={{ cursor: "pointer", background: "none", border: "none" }}
+            >
               {isAr ? "قدّم للسكن" : "Apply to live"}{" "}
               <span className="arrow">→</span>
-            </Link>
+            </button>
             <Link href="#residences" className="soul-btn is-ghost">
               {isAr ? "استكشف المساكن" : "Explore residences"}
             </Link>

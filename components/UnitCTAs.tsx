@@ -1,18 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import ApplicationForm from "@/components/ApplicationForm";
+import { useApply } from "@/contexts/ApplyContext";
 
 const MUTED42 = "rgba(42,32,24,0.42)";
 
 export default function UnitCTAs({
+  unitId,
   unitName,
   unitRef,
 }: {
+  unitId?:  string;
   unitName: string;
   unitRef:  string;
 }) {
-  const [showForm, setShowForm] = useState(false);
+  const { openApply } = useApply();
 
   return (
     <>
@@ -20,9 +21,9 @@ export default function UnitCTAs({
         style={{ display: "flex", flexDirection: "column", gap: "12px" }}
         className="sm:flex-row"
       >
-        {/* Apply for This Residence */}
+        {/* Apply for This Residence — prefilled with this unit */}
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => openApply({ id: unitId, ref: unitRef })}
           className="hover:opacity-75 transition-opacity duration-200"
           style={{
             flex:            1,
@@ -71,9 +72,6 @@ export default function UnitCTAs({
         </a>
       </div>
 
-      {showForm && (
-        <ApplicationForm onClose={() => setShowForm(false)} />
-      )}
     </>
   );
 }

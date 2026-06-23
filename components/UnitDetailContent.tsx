@@ -45,7 +45,7 @@ interface Props {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 export default function UnitDetailContent({
-  name, unitRef, type, bedrooms, bathrooms, area, floor, price, status,
+  id, name, unitRef, type, bedrooms, bathrooms, area, floor, price, status,
   description, homeFeatures, buildingFeatures,
 }: Props) {
   const { t } = useLanguage();
@@ -389,7 +389,7 @@ export default function UnitDetailContent({
         )}
 
         {/* ── CTAs ───────────────────────────────────────────────────────────── */}
-        <UnitCTAs unitName={name} unitRef={unitRef} />
+        <UnitCTAs unitId={id} unitName={name} unitRef={unitRef} />
 
       </div>
     </>

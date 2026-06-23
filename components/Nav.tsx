@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useApply } from "@/contexts/ApplyContext";
 
 /**
  * Top navigation — Claude Design "The Soul" homepage.
@@ -17,6 +18,7 @@ export default function Nav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const { locale, setLocale } = useLanguage();
+  const { openApply } = useApply();
 
   // Hash links auto-prefix with `/` on inner pages
   const h = (href: string) =>
@@ -82,17 +84,30 @@ export default function Nav() {
 
         {/* Desktop links */}
         <div className="hidden items-center md:flex" style={{ gap: 38 }}>
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={h(l.href)}
-              style={linkStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.78")}
-            >
-              {l.label}
-            </Link>
-          ))}
+          {links.map((l) =>
+            l.href === "#apply" ? (
+              <button
+                key={l.href}
+                type="button"
+                onClick={() => openApply()}
+                style={{ ...linkStyle, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.78")}
+              >
+                {l.label}
+              </button>
+            ) : (
+              <Link
+                key={l.href}
+                href={h(l.href)}
+                style={linkStyle}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.78")}
+              >
+                {l.label}
+              </Link>
+            ),
+          )}
         </div>
 
         {/* Right side */}
@@ -144,10 +159,15 @@ export default function Nav() {
             </button>
           </div>
 
-          <Link href={h("#apply")} className="soul-btn">
+          <button
+            type="button"
+            onClick={() => openApply()}
+            className="soul-btn"
+            style={{ cursor: "pointer", background: "none", border: "none" }}
+          >
             {locale === "ar" ? "قدّم للسكن" : "Apply to live"}
             <span className="arrow">→</span>
-          </Link>
+          </button>
         </div>
 
         {/* Mobile burger */}
@@ -181,11 +201,22 @@ export default function Nav() {
           style={{ backgroundColor: "var(--ink)", gap: 28 }}
           onClick={() => setOpen(false)}
         >
-          {links.map((l) => (
-            <Link key={l.href} href={h(l.href)} style={{ ...linkStyle, fontSize: 14, opacity: 0.92 }}>
-              {l.label}
-            </Link>
-          ))}
+          {links.map((l) =>
+            l.href === "#apply" ? (
+              <button
+                key={l.href}
+                type="button"
+                onClick={() => { setOpen(false); openApply(); }}
+                style={{ ...linkStyle, fontSize: 14, opacity: 0.92, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+              >
+                {l.label}
+              </button>
+            ) : (
+              <Link key={l.href} href={h(l.href)} style={{ ...linkStyle, fontSize: 14, opacity: 0.92 }}>
+                {l.label}
+              </Link>
+            ),
+          )}
           <div style={{ width: 24, height: 1, backgroundColor: "var(--line)" }} />
           <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", gap: 10 }}>
             <button
@@ -206,10 +237,15 @@ export default function Nav() {
               }}
             >AR</button>
           </div>
-          <Link href={h("#apply")} className="soul-btn">
+          <button
+            type="button"
+            onClick={() => openApply()}
+            className="soul-btn"
+            style={{ cursor: "pointer", background: "none", border: "none" }}
+          >
             {locale === "ar" ? "قدّم للسكن" : "Apply to live"}
             <span className="arrow">→</span>
-          </Link>
+          </button>
         </div>
       )}
     </>

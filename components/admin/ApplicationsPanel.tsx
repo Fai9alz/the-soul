@@ -158,6 +158,7 @@ function DetailModal({
     ["Full Name",      app.name          || "—"],
     ["Email",          app.email         || "—"],
     ["Phone",          app.phone         || "—"],
+    ["Unit",           app.unitRef       || "No unit selected"],
     ["Members",        app.members       || "—"],
     ["Marital Status", app.maritalStatus || "—"],
     ["Relationship",   app.relationship  || "—"],
@@ -515,7 +516,7 @@ export default function ApplicationsPanel() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50">
-                    {["Name", "Status", "Contact", "Viewing", "Company", "Submitted", ""].map((h) => (
+                    {["Name", "Status", "Unit", "Contact", "Viewing", "Company", "Submitted", ""].map((h) => (
                       <th key={h} className="text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-5 py-3 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -539,6 +540,17 @@ export default function ApplicationsPanel() {
                           current={app.status}
                           onChange={handleStatusChange}
                         />
+                      </td>
+
+                      {/* Unit — reference code, or "General Application" when no unit was selected */}
+                      <td className="px-5 py-3.5 whitespace-nowrap">
+                        {app.unitRef ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide bg-indigo-50 text-indigo-700">
+                            {app.unitRef}
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-gray-400 italic">General Application</span>
+                        )}
                       </td>
 
                       {/* Contact */}
@@ -601,9 +613,16 @@ export default function ApplicationsPanel() {
                     </button>
                   </div>
 
-                  {/* Status badge */}
-                  <div className="mb-2.5">
+                  {/* Status badge + Unit */}
+                  <div className="mb-2.5 flex items-center gap-2 flex-wrap">
                     <StatusBadge status={app.status} />
+                    {app.unitRef ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide bg-indigo-50 text-indigo-700">
+                        {app.unitRef}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-gray-400 italic">General Application</span>
+                    )}
                   </div>
 
                   {/* Viewing date */}

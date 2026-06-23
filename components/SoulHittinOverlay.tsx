@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { SOUL_HITTIN_UNITS, Unit, UnitStatus, UnitType } from "@/lib/units";
+import { useApply } from "@/contexts/ApplyContext";
 
 // ── config ────────────────────────────────────────────────────────────────────
 
@@ -191,6 +192,7 @@ function UnitCard({ unit, onClick }: { unit: Unit; onClick: () => void }) {
 function UnitDrawer({ unit, onClose }: { unit: Unit | null; onClose: () => void }) {
   const isOpen = unit !== null;
   const sc = unit ? STATUS_CFG[unit.status] : null;
+  const { openApply } = useApply();
 
   // lock overlay scroll when drawer is open
   useEffect(() => {
@@ -348,34 +350,38 @@ function UnitDrawer({ unit, onClose }: { unit: Unit | null; onClose: () => void 
                 </ul>
               </div>
 
-              {/* CTA */}
+              {/* CTA — open the application form with this unit prefilled */}
               {unit.status === "Available" && (
-                <a href="#apply"
+                <button type="button"
+                  onClick={() => { onClose(); openApply({ id: unit.id, ref: unit.ref }); }}
                   style={{ display: "block", width: "100%", padding: "14px 20px",
                     backgroundColor: "var(--dark)", color: "var(--bg)",
                     fontFamily: "var(--font-sans)", fontSize: "0.56rem",
                     textTransform: "uppercase" as const, letterSpacing: "0.3em",
                     textAlign: "center" as const, textDecoration: "none",
-                    transition: "opacity 0.18s", boxSizing: "border-box" as const }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.75"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}>
+                    transition: "opacity 0.18s", boxSizing: "border-box" as const,
+                    border: "none", cursor: "pointer" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.75"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}>
                   Apply for This Residence
-                </a>
+                </button>
               )}
 
               {unit.status === "Coming Soon" && (
-                <a href="#apply"
+                <button type="button"
+                  onClick={() => { onClose(); openApply({ id: unit.id, ref: unit.ref }); }}
                   style={{ display: "block", width: "100%", padding: "13px 20px",
                     backgroundColor: "transparent", color: "var(--dark)",
                     fontFamily: "var(--font-sans)", fontSize: "0.56rem",
                     textTransform: "uppercase" as const, letterSpacing: "0.3em",
                     textAlign: "center" as const, textDecoration: "none",
                     border: "1px solid rgba(42,32,24,0.22)",
-                    transition: "border-color 0.18s", boxSizing: "border-box" as const }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(42,32,24,0.5)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(42,32,24,0.22)"; }}>
+                    transition: "border-color 0.18s", boxSizing: "border-box" as const,
+                    cursor: "pointer" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(42,32,24,0.5)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(42,32,24,0.22)"; }}>
                   Register Interest
-                </a>
+                </button>
               )}
 
               {unit.status === "Reserved" && (

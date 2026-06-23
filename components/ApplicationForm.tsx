@@ -115,9 +115,13 @@ function Field({ label, required, error, children }: {
 export default function ApplicationForm({
   onClose,
   initialStep = 0,
+  unitId,
+  unitRef,
 }: {
   onClose: () => void;
   initialStep?: number;
+  unitId?: string;
+  unitRef?: string;
 }) {
   const { t } = useLanguage();
   const f = t.form;
@@ -227,6 +231,8 @@ export default function ApplicationForm({
         referrerName:  "",
         relationship:  data.maritalStatus,
         message:       data.message,
+        unitId:        unitId  ?? null,
+        unitRef:       unitRef ?? null,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

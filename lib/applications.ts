@@ -5,12 +5,19 @@
 //   job, company,
 //   referral, referrer_name, relationship,
 //   viewing_date, viewing_time,
-//   status  ← TEXT NOT NULL DEFAULT 'New'
+//   status          ← TEXT NOT NULL DEFAULT 'New'
+//   unit_id         ← UUID NULL — references units(id) when applying from a
+//                     specific unit; NULL for general "Apply to Live" inquiries
+//   unit_reference  ← TEXT NULL — denormalized unit reference code (e.g. "SH-201")
+//                     stored alongside unit_id so general applications stay
+//                     readable in admin even if the unit is later deleted
 //
-// Migration (run once in Supabase SQL editor):
+// Migrations (run once in Supabase SQL editor):
 //   ALTER TABLE applications
 //     ADD COLUMN status text NOT NULL DEFAULT 'New'
 //     CHECK (status IN ('New','Contacted','Viewing Scheduled','Approved','Rejected'));
+//
+//   See supabase/migrations/003_application_unit_link.sql for the unit columns.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { supabase } from "./supabase";
@@ -53,6 +60,9 @@ export interface Application {
   relationship:  string;
   message:       string;   // not in DB — form only
   status:        AppStatus; // ← persisted in DB, defaults to "New"
+  // Optional unit link — empty string when the application is a general inquiry.
+  unitId:        string | null; // ← unit_id (uuid, nullable)
+  unitRef:       string | null; // ← unit_reference (text, nullable)
 }
 
 // ── Actual DB row shape ───────────────────────────────────────────────────────
@@ -73,6 +83,8 @@ interface AppRow {
   viewing_date:   string | null;
   viewing_time:   string | null;
   status:         string | null;
+  unit_id:        string | null;
+  unit_reference: string | null;
 }
 
 function rowToApp(row: AppRow): Application {
@@ -92,6 +104,8 @@ function rowToApp(row: AppRow): Application {
     referrerName:  row.referrer_name  ?? "",
     relationship:  row.relationship   ?? "",
     status:        (row.status        ?? "New") as AppStatus,
+    unitId:        row.unit_id        ?? null,
+    unitRef:       row.unit_reference ?? null,
     // fields not in DB
     nationality:   "",
     incomeRange:   "",
@@ -120,6 +134,14 @@ export async function saveApplication(
     throw new Error("Household members must be a valid number.");
   }
 
+  // Unit link is optional — applications submitted from the navbar, hero, or
+  // general Apply section pass null for both. Submissions from a specific unit
+  // page pass the unit's id (uuid) and reference code (e.g. "SH-201").
+  const unitIdRaw = (payload.unitId ?? "").trim();
+  const unitRefRaw = (payload.unitRef ?? "").trim();
+  const unitIdVal  = unitIdRaw  === "" ? null : unitIdRaw;
+  const unitRefVal = unitRefRaw === "" ? null : unitRefRaw;
+
   const row = {
     full_name:      txt(payload.name),
     email:          txt(payload.email),
@@ -133,6 +155,8 @@ export async function saveApplication(
     relationship:   txt(payload.relationship),
     viewing_date:   txt(payload.viewingDate),
     viewing_time:   txt(payload.viewingTime),
+    unit_id:        unitIdVal,
+    unit_reference: unitRefVal,
     // status defaults to 'New' at the DB level
   };
 
