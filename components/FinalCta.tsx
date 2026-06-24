@@ -25,23 +25,31 @@ export default function FinalCta() {
         borderTop: "1px solid var(--line)",
       }}
     >
-      {/* Backdrop */}
+      {/* Backdrop — fully visible interior, matched to Hero's exposure
+          (brightness .78 / saturate .92) so the image reads clearly on both
+          desktop and mobile. Explicit background-size/position/repeat per spec. */}
       <div
         aria-hidden
         style={{
-          position: "absolute",
-          inset: 0,
-          background: "url('/design/interior-3.jpeg') center/cover",
-          filter: "brightness(.32) saturate(.85)",
+          position:           "absolute",
+          inset:              0,
+          backgroundImage:    "url('/design/interior-3.jpeg')",
+          backgroundSize:     "cover",
+          backgroundPosition: "center",
+          backgroundRepeat:   "no-repeat",
+          filter:             "brightness(.78) saturate(.92)",
         }}
       />
+      {/* Readability gradient — same shape as the Hero overlay so the headline
+          stays legible without hiding the photo. Lighter in the middle, deeper
+          at the top and bottom edges. */}
       <div
         aria-hidden
         style={{
           position: "absolute",
-          inset: 0,
+          inset:    0,
           background:
-            "radial-gradient(60% 80% at 50% 50%, transparent 0%, rgba(15,11,8,.78) 100%)",
+            "linear-gradient(180deg, rgba(15,11,8,.55) 0%, rgba(15,11,8,.28) 38%, rgba(15,11,8,.5) 72%, rgba(15,11,8,.9) 100%)",
         }}
       />
 
